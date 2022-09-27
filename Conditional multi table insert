@@ -1,0 +1,76 @@
+Conditional Multi-table Insert
+When doing a multi-table insert, you may want choose which tables to add rows to at runtime. You can do this by adding a when clause before "into table". The database will only add rows to this table if the condition is true.
+
+Conditional multi-table inserts come in two forms: all and first.
+
+insert [ all | first ]
+  when test1 then 
+    into t1 ...
+  when test2 then 
+    into t2 ...
+    into t3 ...
+  else
+    into t4 ...
+  select * from query;
+All
+When you specify all, the database evaluates every condition for each row the query returns. Each row goes in every table where the condition is true.
+
+You can also add an else clause. This inserts rows which match no other conditions.
+
+First
+Insert first evaluates the conditions from top to bottom. If a row matches many conditions, it only adds the row to the highest one that is true. It skips all remaining tests.
+
+As with insert all, you can provide an else clause to catch rows which match no other conditions.
+
+You can see the difference between all and first in code below. The row for toy_id 11 has the name Cuteasaurus and colour blue. So it matches both of these tests:
+
+  when colour = 'blue' then
+    ..
+  when toy_name = 'Cuteasaurus' then
+So insert all adds two copies of this row into bricks. But insert first stops processing when identifies the colour as blue. So it only inserts one copy:
+
+insert into toys ( toy_id, toy_name, colour ) 
+  values ( 11, 'Cuteasaurus', 'blue' );
+insert into toys ( toy_id, toy_name, colour ) 
+  values ( 12, 'Sir Stripypants', 'blue' );
+insert into toys ( toy_id, toy_name, colour ) 
+  values ( 13, 'White Rabbit', 'white' );
+
+exec savepoint post_toys;
+
+insert all
+  when colour = 'blue' then
+    into bricks ( brick_id, colour ) 
+    values ( toy_id, colour )
+  when toy_name = 'Cuteasaurus' then
+    into bricks ( brick_id, colour ) 
+    values ( toy_id, colour )
+  else
+    into bricks ( brick_id, colour ) 
+    values ( toy_id, colour )
+  select * from toys
+  where  toy_id >= 11;
+  
+select * from bricks
+where  brick_id >= 11;
+
+rollback to savepoint post_toys;
+
+insert first
+  when colour = 'blue' then
+    into bricks ( brick_id, colour ) 
+    values ( toy_id, colour )
+  when toy_name = 'Cuteasaurus' then
+    into bricks ( brick_id, colour ) 
+    values ( toy_id, colour )
+  else
+    into bricks ( brick_id, colour ) 
+    values ( toy_id, colour )
+  select * from toys
+  where  toy_id >= 11;
+  
+select * from bricks
+where  brick_id >= 11;
+
+rollback;
+In both statements, the row for toy_id 13 matches no criteria. So it falls into the else block.
