@@ -1,0 +1,32 @@
+Performance: Single Row vs. Multi-row
+In general it's better to combine SQL commands into as few statements as possible. This will give the best performance.
+
+For example, the following compares the performance of single-row vs multi-row inserts. Both add 50,000 rows. Single-row adds one row 50,000 times. Multi-row adds 50,000 rows in one go. The multi-row version will be 10x to 100x faster!
+
+declare
+  start_time   pls_integer;
+  insert_count pls_integer := 50000;
+begin
+  start_time := dbms_utility.get_time ();
+  
+  for i in 1 .. insert_count loop
+    insert into bricks 
+    values ( i, 'red', 'cube' );
+  end loop;
+  
+  dbms_output.put_line ( 'Single-row duration = ' || ( dbms_utility.get_time () - start_time) );
+  
+  rollback;
+  
+  start_time := dbms_utility.get_time ();
+  
+  insert into bricks
+    select level, 'red', 'cube' from dual
+    connect by level <= insert_count;
+  
+  dbms_output.put_line ( 'Multi-row duration = ' || ( dbms_utility.get_time () - start_time) );
+  
+  rollback;
+end;
+/
+So use multi-row inserts where you can!
