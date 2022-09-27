@@ -1,3 +1,16 @@
+Prerequisite SQL
+create table toys (
+  toy_id   integer,
+  toy_name varchar2(100),
+  colour   varchar2(10)
+);
+
+create table bricks (
+  brick_id integer,
+  colour   varchar2(10),
+  shape    varchar2(10)
+);
+
 Conditional Multi-table Insert
 When doing a multi-table insert, you may want choose which tables to add rows to at runtime. You can do this by adding a when clause before "into table". The database will only add rows to this table if the condition is true.
 
