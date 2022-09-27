@@ -1,0 +1,18 @@
+Sub queries can be used as inline views 
+
+eg :
+select * from (
+  select * from bricks
+)
+
+select * from (
+  select colour, count(*) c
+  from   bricks
+  group  by colour
+) brick_counts
+join   colours
+on     brick_counts.colour = colours.colour_name
+and    brick_counts.c < colours.minimum_bricks_needed
+
+Sub queries can be used as Nested subqueries
+ Nested subqueries go in your where clause. The query filters rows in the parent tables.
