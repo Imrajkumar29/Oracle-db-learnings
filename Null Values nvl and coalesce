@@ -1,0 +1,35 @@
+Null is neither equal to nor not equal to anything. The result of:
+
+null = <anything> is always unknown. So the following query will always return no rows:
+
+select * from toys
+where  volume_of_wood = null;
+
+Null functions
+Oracle Database includes many functions to help you handle nulls. NVL and coalesce are two that map nulls to non-null values.
+
+NVL
+
+This takes two arguments. If the first is null, it returns the second:
+
+select toy_name, volume_of_wood, nvl ( volume_of_wood , 0 ) mapped_volume_of_wood
+from   toys;
+Coalesce
+
+This is like NVL. But it can take any number of arguments. It returns the first non-null value it finds:
+
+select t.*,
+       coalesce ( volume_of_wood , 0 ) coalesce_two,
+       coalesce ( times_lost, volume_of_wood , quantity_of_stuffing, 0 ) coalesce_many
+from   toys t;
+You can use these functions in the where clause to map nulls to a real value. So you no longer need a separate "or column is null" test.
+
+For example, these return the same rows as the final query in section 5:
+
+select *
+from   toys
+where  nvl ( volume_of_wood , 0 ) < 15;
+
+select *
+from   toys
+where  coalesce ( volume_of_wood , 0) < 15;
