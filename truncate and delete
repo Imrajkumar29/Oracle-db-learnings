@@ -1,0 +1,31 @@
+Truncate
+You can also remove all the rows from a table with truncate. Unlike delete, this is a Data Definition Language (DDL) statement in Oracle Database.
+
+DDL statements (create table, alter table, etc.) commit. So you can't rollback a truncate!
+
+Note how, even after the rollback, the table remains empty:
+
+select * from toys;
+
+truncate table toys;
+
+select * from toys;
+
+rollback;
+
+select * from toys;
+Truncate is also an all-or-nothing statement. You can't remove some rows using a where clause. If you add one, the statement throws an error:
+
+truncate table toys where price < 1;
+So with these gotchas, you may be wondering why you'd use truncate over delete. One key reason: performance.
+
+Truncate is fast. It marks the table as empty without touching the data. So truncate operations are instant, no matter how many rows the table stores.
+
+Whereas delete processes each row. So as the number of rows in the table increases, the time to delete them all will also increase. Deleting millions of rows can take hours to complete!
+
+Truncate also deallocates a table's storage. But the space remains allocated to the table with delete.
+
+If you want the space to stay assigned to the table after a truncate, use the "reuse storage" clause, like so:
+
+truncate table toys reuse storage;
+Keeping the storage is useful if you re-insert a similar number of rows soon after the truncate. For example, on a daily load from an external system. Leaving the space assigned to the table reduces the work the database does during the load.
