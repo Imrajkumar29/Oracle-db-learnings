@@ -1,3 +1,17 @@
+Pre requisite query 
+create table bricks (
+  colour      varchar2(10),
+  shape       varchar2(10),
+  quantity    integer,
+  unit_weight integer
+);
+
+insert into bricks values ( 'red', 'cylinder', 1, 13 );
+insert into bricks values ( 'blue', 'cube', 51, 8 );
+insert into bricks values ( 'green', 'cube', 600, 8 );
+
+commit;
+
 Deadlocks
 When a transaction runs many updates, you need to take care. If two or more people try to change the same rows at the same time, you can get into deadlock situations. This is where sessions form a circle, each waiting on the other.
 
