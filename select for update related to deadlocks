@@ -55,3 +55,20 @@ commit;
 Deadlock can also happen when a transaction updates two or more different tables. If two separate transactions update two tables in a different order, you'll have deadlock.
 
 This is harder to avoid. You need to ensure all transactions lock tables in the same order. You need define an order for acquiring locks. And ensure all developers on the application using the same method. This requires thorough documentation, code reviews, and testing to ensure deadlock is impossible.
+
+Lost Updates
+A lost update happens when two people change the same row and one overwrites another's changes. This is a common problem if you set values for all column not in the where clause. Regardless of whether the user changed the value.
+
+You could avoid the issue above by having separate forms for managing weights and quantities. Saving changes in each of these runs an update which only changes values in the relevant column.
+
+But separation like this isn't always possible. And it's more work to develop. In general to avoid lost updates you can use pessimistic or optimistic locking.
+
+Pessimistic locking locks rows from the time the user first queries them with select for update. The lock remains until they save their changes. To use it, you need a stateful application. This is rare in the web, where most applications are stateless. Most applications you work on will use optimistic locking.
+
+Optimistic locking works by checking values the user read are still the same when they update the row. If they aren't the update does nothing.
+
+There are many ways you can do this, including:
+
+Adding a version number to each row
+Adding a last updated timestamp to each row
+Checking that the current values match those queried when you run your update
