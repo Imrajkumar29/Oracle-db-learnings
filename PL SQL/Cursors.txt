@@ -1,0 +1,36 @@
+Cursor - Cursor is name for a sql query(select statement)
+Named location for the memory where the query stores its results.
+Cursor is a pointer to the memory location which hold the the information the select statement or DML statement and its result set .
+
+Cursor Types - implicit cursor and explicit cursor
+Implicit cursor
+Any sql statement That is executed in oracle is through an implicit cursor. 
+oracle opens a memory location ,executes it , returns a result and closes the memory location.
+We cannot control implicit cursors.
+
+Explicit Cursor
+Fully Managed by the dev. 
+Declare, Open , Fetch , Close . These 4 steps in the same order. 
+Step1: Declare the cursor.
+Step2  :Open (cursor name) keyword will execute the sql query and information will be loaded into the memory.
+Once the information is loaded to the memory. The pointer points to the first row of the result set.
+Step3 : when FetcH (Cursor Name) keyword is the executed, the value pointed in the cursor will loaded into the variable.
+Once the record is fetched the pointer will move to the next row in the cursor.
+Step4: close (cursor name) keyword is used to close the memory location of the cursor. Close the cursor and release the memory.
+
+V$OPEN_CURSOR(select * from V$OPEN_CURSOR) - dynamic view which holds informationb about all the session cursors.
+V$PARAMETER -(select * from  V$PARAMETER where name like '%open_cursors%') value =300 300 is the maximum no cursors that can be open per session.
+
+Cursor Attributes - isopen , found, notfound ,rowcount
+isopen - returns true if cursor is oopen else returns false
+not found -While using the fetch keyword in a loop, Use exit when (cursor name) %notfound to check if the cursor has reached the last record 
+of the result set in the cursor. notfound is an boolean attribute which returns true when it reaches the end of the result set.
+rowcount - retunrs the no of fetches successfully completed
+
+Explicit Cursor - Name Cursor ,Ref Cursor , For Cursor and Paramterized cursor
+Ref Cursor - Reference to a cursor 
+it is a PL SQL data type using which you can declare special type of variable called cursor variable.
+Two types of ref cursors - Strong typed ref cursor , Weakly typed ref cursor
+Strong ref cursor - 
+
+
