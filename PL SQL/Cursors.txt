@@ -33,9 +33,20 @@ implicit cursor - sql%isopen, sql%rowcount. isopen always returns false when use
 
 Explicit Cursor - Named Cursor ,Ref Cursor , For Cursor and Paramterized cursor
 
-Parameterised Cursor - see example below
+Parameterised Cursor - see example below. main advantage is reusability.
 in declare ,cursor emp_name_list(p_dept_no number) is select ename from emp where deptno =p_dept_no;
 inside begin , open emp_name_list(10);
+
+For Cursor - if we use the cursor only once and  not going to use again FOR cursor is useful. 
+no need of seperate open, fetch,exit ,close keywords. this is taken care automatically.
+BEGIN
+FOR I in (select ename from emp)
+LOOP
+dbms_output.put_line(I.ename);
+END LOOP;
+END;
+In the above example we can declare a cursor variable and use it in the place of the sql statement. This way we can reuse the cursor again. Thus getting the benefit of for as well as the reusability factor.
+Also we can use parameter with for cursor like priniting employees of dept no 10. 10 is the parameter to be passed.
 
 Ref Cursor - Reference to a cursor 
 it is a PL SQL data type using which you can declare special type of variable called cursor variable.
