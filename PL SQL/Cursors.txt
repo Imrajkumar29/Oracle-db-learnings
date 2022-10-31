@@ -31,7 +31,12 @@ rowcount - retunrs the no of fetches successfully completed. This returns a numb
 Syntax: explicit cursor cursor_name%isopen
 implicit cursor - sql%isopen, sql%rowcount. isopen always returns false when used with implicit cursor
 
-Explicit Cursor - Name Cursor ,Ref Cursor , For Cursor and Paramterized cursor
+Explicit Cursor - Named Cursor ,Ref Cursor , For Cursor and Paramterized cursor
+
+Parameterised Cursor - see example below
+in declare ,cursor emp_name_list(p_dept_no number) is select ename from emp where deptno =p_dept_no;
+inside begin , open emp_name_list(10);
+
 Ref Cursor - Reference to a cursor 
 it is a PL SQL data type using which you can declare special type of variable called cursor variable.
 Two types of ref cursors - Strong typed ref cursor , Weakly typed ref cursor
