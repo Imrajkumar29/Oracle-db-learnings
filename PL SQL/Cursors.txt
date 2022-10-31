@@ -21,11 +21,15 @@ Step4: close (cursor name) keyword is used to close the memory location of the c
 V$OPEN_CURSOR(select * from V$OPEN_CURSOR) - dynamic view which holds informationb about all the session cursors.
 V$PARAMETER -(select * from  V$PARAMETER where name like '%open_cursors%') value =300 300 is the maximum no cursors that can be open per session.
 
-Cursor Attributes - isopen , found, notfound ,rowcount
-isopen - returns true if cursor is oopen else returns false
+Cursor Attributes - isopen , found, notfound ,rowcount - can be used to find information about the cursor when it is executed
+found ,notfound and rowcount will return invalid cursor if it is used before opening the cursor.
+found and notfound cannot be used in implicit cursor. since cursor opened and closed by oracle
+isopen - returns true if cursor is open else returns false
 not found -While using the fetch keyword in a loop, Use exit when (cursor name) %notfound to check if the cursor has reached the last record 
 of the result set in the cursor. notfound is an boolean attribute which returns true when it reaches the end of the result set.
-rowcount - retunrs the no of fetches successfully completed
+rowcount - retunrs the no of fetches successfully completed. This returns a number.
+Syntax: explicit cursor cursor_name%isopen
+implicit cursor - sql%isopen, sql%rowcount. isopen always returns false when used with implicit cursor
 
 Explicit Cursor - Name Cursor ,Ref Cursor , For Cursor and Paramterized cursor
 Ref Cursor - Reference to a cursor 
