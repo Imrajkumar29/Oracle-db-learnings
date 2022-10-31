@@ -31,7 +31,7 @@ rowcount - retunrs the no of fetches successfully completed. This returns a numb
 Syntax: explicit cursor cursor_name%isopen
 implicit cursor - sql%isopen, sql%rowcount. isopen always returns false when used with implicit cursor
 
-Explicit Cursor - Named Cursor ,Ref Cursor , For Cursor and Paramterized cursor
+Explicit Cursor - Named Cursor ,Ref Cursor , For Cursor and Parameterized cursor
 
 Parameterised Cursor - see example below. main advantage is reusability.
 in declare ,cursor emp_name_list(p_dept_no number) is select ename from emp where deptno =p_dept_no;
@@ -50,7 +50,18 @@ Also we can use parameter with for cursor like priniting employees of dept no 10
 
 Ref Cursor - Reference to a cursor 
 it is a PL SQL data type using which you can declare special type of variable called cursor variable.
-Two types of ref cursors - Strong typed ref cursor , Weakly typed ref cursor
-Strong ref cursor - 
+Strong ref cursor - cursor with return datatype. 
+
+Ref Cursor Summary
+Ref Cursor is a "data type".
+Variable created based on Ref Cursor Type is called cursor variable.
+Ref Cursor can be opened for different SQL statements.
+Ref Cursor can be opened dynamically framed sql statements. 
+ref cursor is very dynamic compared to "explicit named cursor".
+Two types of ref cursors - Strong typed ref cursor , Weakly typed ref cursor.
+The main advantage if ref cursor is , it can be passed as parameter between PLSQL components.
+Ref Cursor can be used to return result to client application API.
+
+
 
 
