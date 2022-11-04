@@ -58,7 +58,7 @@ Variable created based on Ref Cursor Type is called cursor variable.
 Ref Cursor can be opened for different SQL statements. Ref Cursor allows us to execute different sets of sql queries.
 In named explicit cursor while declaring itself we will associate the sql query with the cursor
 but for ref cursor we will associtate the sql query while opening the cursor.
-Ref Cursor can be opened for dynamically framed sql statements. 
+Ref Cursor can be opened for dynamically framed sql statements. that is strings for eg : open rc_emp_list_cur for 'select ename from emp'.
 ref cursor is very dynamic compared to "explicit named cursor".
 Two types of ref cursors - Strong typed ref cursor , Weakly typed ref cursor.
 The main advantage if ref cursor is , it can be passed as parameter between PLSQL components.
