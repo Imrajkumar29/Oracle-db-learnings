@@ -65,6 +65,7 @@ ref cursor is very dynamic compared to "explicit named cursor".
 Two types of ref cursors - Strong typed ref cursor , Weakly typed ref cursor.
 Strongly typed eg :Type ref_cur_type is ref cursor return emp%rowtype . This has to return only emp%rowtype.
 Weakly typed - if the return type is not specified then it is a weakly typed ref cursor.
+sys_refcursor - it is always a weakly typed ref cursor. usage: rc_emp_list_cur sys_refcursor;
 The main advantage of ref cursor is , it can be passed as parameter between PLSQL components.
 Ref Cursor can be used to return result to client application API.
 
