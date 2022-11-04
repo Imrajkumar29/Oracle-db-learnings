@@ -55,13 +55,42 @@ Strong ref cursor - cursor with return datatype.
 Ref Cursor Summary
 Ref Cursor is a "data type".
 Variable created based on Ref Cursor Type is called cursor variable.
-Ref Cursor can be opened for different SQL statements.
-Ref Cursor can be opened dynamically framed sql statements. 
+Ref Cursor can be opened for different SQL statements. Ref Cursor allows us to execute different sets of sql queries.
+In named explicit cursor while declaring itself we will associate the sql query with the cursor
+but for ref cursor we will associtate the sql query while opening the cursor.
+Ref Cursor can be opened for dynamically framed sql statements. 
 ref cursor is very dynamic compared to "explicit named cursor".
 Two types of ref cursors - Strong typed ref cursor , Weakly typed ref cursor.
 The main advantage if ref cursor is , it can be passed as parameter between PLSQL components.
 Ref Cursor can be used to return result to client application API.
 
+eg :
+Declare 
+Type ref_cur_type is ref cursor;
+rc_emp_list_cur ref_cur_type;
+v_name varchar2(100);
+v_id number;
 
+BEGIN
+dbms_output.put_line('employees names');
+open rc_emp_list_cur for select ename from emp;
+
+LOOP 
+fetch rc_emp_list_cur into v_name;
+exit when rc_emp_list_cur%notound;
+dbms_output.put_line(v_name);
+END loop
+close rc_emp_list_cur;
+
+open rc_emp_list_cur for select deptno,dname from dept;
+
+LOOP 
+fetch rc_emp_list_cur into v_id,v_name;
+exit when rc_emp_list_cur%notound;
+dbms_output.put_line(vid||' - '||v_name);
+END loop
+close rc_emp_list_cur;
+
+END;
 
 
