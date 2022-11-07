@@ -111,4 +111,36 @@ v_day(1):= 'MONDAY';
 dbms_output.put_line('v_day(1)='||v_day(1));
 end;
 
+Collection Methods:
+LIMIT - gives the maximum number of elements that can be stored in the varray.
+COUNT - number of elements stored in the varray. number of elements initialized and assigned.
+FIRST - subscript of the first element
+LAST -subscript of the last element
+TRIM(n) - removes the last n elements from the array.
+DELETE - deletes all the elements from the varray. 
+EXTEND(n) -  used to extend/ allocate memory for elements of the varray.but cannot exceed the limit specified during initialization.
+In the below example can't exceed 7.
+PRIOR(n) - prints the previous subscript of the varray.
+NEXT(n) - prints the next subscript of the varray.
+
+Note :We will not be able to delete any specific element in the varray. its either everything or from the last.
+
+Declare
+Type V_Array_type is VARRAY(7) of VARCHAR2(30);
+v_day V_Array_type := V_Array_type (null,null,null);
+BEGIN
+v_day(1):= 'MONDAY';
+v_day(2):='TUESDAY';
+dbms_output.put_line('v_day.limit='||v_day.limit); -- prints 7
+dbms_output.put_line('v_day.count='||v_day.count); -- prints 3 since we initialized 3 values with null
+dbms_output.put_line('v_day.first='||v_day.first); --prints 1
+dbms_output.put_line('v_day.last='||v_day.last); -- prints 3
+v_day.trim();--removes one element
+dbms_output.put_line('v_day.count='||v_day.count); -- prints 2
+dbms_output.put_line('v_day.prior='||v_day.prior(2)); -- prints 1
+dbms_output.put_line('v_day.prior='||v_day.next(1)); -- prints 2
+v_day.delete; -- deletes all the elements
+end;
+end;
+
 
