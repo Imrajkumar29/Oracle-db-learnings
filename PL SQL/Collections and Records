@@ -1,0 +1,27 @@
+Data Types -> Scalar data types and Composite Data types and Reference Types
+
+Scalar Data Types: Can be used to store only one value in one variable
+NUMBER, PLS_INTEGER, BINARY_FLOAT,BINARY_DOUBLE
+CHAR, VARCHAR2, NCHAR, NVARCHAR2
+RAW
+BOOLEAN
+BLOB, CLOB, NCLOB
+DATE, TIMESTAMP
+
+Composite Datatypes:
+1.Record : Hold one row of data eg: one row of employee can be stored in a variable.
+Can be defined using Type keyword and %rowtype.The type mentioned here refers to the TYPE definition.
+The internal components can have different data type, and are called elements.
+Each field of a record variable can be accessed by its name with the syntax variable_name.field_name.
+
+
+2.Collection : A collection is an ordered group of logically related elements. 
+Has three types of collection : Varrray, Nested Table, Associative array.
+The internal components always have the same data type, and are called fields. 
+Each element of a collection variable can be accessed by its unique index  with the syntax variable_name(index) .
+Can be defined using Type keyword to create a collection type and create a variable of that collection type and or %type.
+
+
+
+
+
