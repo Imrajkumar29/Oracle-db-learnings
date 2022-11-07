@@ -13,6 +13,7 @@ Composite Datatypes:
 Can be defined using Type keyword and %rowtype.The type mentioned here refers to the TYPE definition.
 The internal components can have different data type, and are called elements.
 Each field of a record variable can be accessed by its name with the syntax variable_name.field_name.
+Record type cannot be created at schema level.
 
 Example of record with select, insert and update statement usage
 --create table emp_bkp as select * from emp where 1=2;
@@ -44,6 +45,29 @@ close c1;
 dbms_output.put_line('empno='||lv_emp_rec.empno);
 dbms_output.put_line('name='||lv_emp_rec.ename);
 dbms_output.put_line('job='||lv_emp_rec.job);
+end;
+
+creating a record using type definition
+Three ways to assign values to a record is given in the below example : 
+using select statement , using record_name.field_name , using constructor at the time of declaration.
+
+Declare 
+Type emp_rec_type is record 
+(empname varchar2(100), 
+empsal number);
+-- while using not null constraint in record , value should be assigned to the field while declaration.
+--empname varchar2(100) not null:'SIVAM',
+-- we can use %type to inherit the datatype of a column from a database table. used to define the datatype of a field/variable
+--empname emp.ename%type (table_name.colum_name%type)
+emp_rec emp_rec_type;
+-- using constructor to assign values to a record
+--emp_rec emp_rec_type :=emp_rec_type('SIVA',100);
+BEGIN
+emp_rec.empname :='SIVA';
+emp_rec.empsal :=100;
+--select ename,sal into emp_rec from emp where empno =7934;
+dbms_output.put_line('empname='||emp_rec.empname);
+dbms_output.put_line('empsal='||emp_rec.empsal);
 end;
 
 2.Collection : A collection is an ordered group of logically related elements. 
