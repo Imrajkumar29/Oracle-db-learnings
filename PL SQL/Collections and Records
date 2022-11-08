@@ -203,7 +203,18 @@ Nested Table :
 Nested Table does not have an upper bound like varray.
 In Nested Table we will be able to delete a specific element. That is the element in the middle/specific location can be deleted.
 So there is no guarantee that the nested table will be continous. Whereas varray is continously stored.
-As there is upper bound in nested table, the method limit is of no use .when it is used in code with nested table it doesn't throw exception but prints empty.
+In nested table method go through different behaviour of limit menthod and exists method.
+limit-As there is upper bound in nested table, the method limit is of no use .when it is used in code with nested table it doesn't throw exception but prints empty.
+First - will return the index of the first element
+Last - will return the index of the last element
+count -number of elements that are initialized and for which memeory is alloted.
+trim- delete one element from the last.
+trim(n)- deletes n elements from the last.
+prior- will give previous index/subscript.
+next - will give next index.
+delete(n)- will delete the element in index n.
+delete - deletes all the elements.
+exists(n)- checks if element is available in index n.
 
 Declare 
 Type v_nested_tab_type is table of varchar(30);
