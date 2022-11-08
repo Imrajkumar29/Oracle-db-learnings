@@ -203,6 +203,10 @@ Nested Table :
 Nested Table does not have an upper bound like varray.
 In Nested Table we will be able to delete a specific element. That is the element in the middle/specific location can be deleted.
 So there is no guarantee that the nested table will be continous. Whereas varray is continously stored.
+When choose nested table:
+If number of elements to be used are known varray can be used otherwise we can choose nested table.
+For continous collection we can use varray, if element deletion is required in the middle we can go for nestedable.
+Nested table Collection Methods :
 In nested table method go through different behaviour of limit menthod and exists method.
 limit-As there is upper bound in nested table, the method limit is of no use .when it is used in code with nested table it doesn't throw exception but prints empty.
 First - will return the index of the first element
@@ -216,6 +220,7 @@ delete(n)- will delete the element in index n.
 delete - deletes all the elements.
 exists(n)- checks if element is available in index n.
 
+Eg code for Nested Tables:
 Declare 
 Type v_nested_tab_type is table of varchar(30);
 vday v_nested_tab_type :=  v_nested_tab_type(null,null,null,null,null,null,null);
