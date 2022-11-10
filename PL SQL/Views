@@ -2,8 +2,19 @@ Views - Presents data from the underlying table.Views display the same data in m
 View do not hold any data of its own. Views are metadata only objects(or can be said as named queries).
 View will execute the query and fetch the underlying information from the base table.
 It is a logical table created on top of the base table.
-Create or  Replace force View emp_10 as select * from emp where deptno=10;
-force - If we want to create a view first before the base table is created. But This can be used only when the base table is created.
+
+force view- If we want to create a view first before the underlying base table is created. But This can be used only when the base table is created.
+    with force keyword, view will get created with compilation errors. check user_objects,user_views table for status.
+    In user objects status will be invalid before underlying table is created.
+    eg :Create or  Replace force View emp_10 as select * from emp where deptno=10;
+Read Only constraint -> To restrict dml operatons in the view this is used.
+    Create or Replace View student_view as select * from student with read only;
+With Check Option Constraint -> Will check if the values inserted(or DML operation performed) in the view ,satisfies the where condition mentioned in the query.
+    Eg: create or replace view student_view_ece as select * from student where dept ='ECE' with check option.
+    select * from user_constraints where table_name in ('STUDENT_VIEW','STUDENT_VIEW_ECE');--> if we do not specify any
+    constraint name oracle will create system defined constraint name.
+    to specify user defined constraint name -> Create or Replace View student_view as select * from student with read only constraint read_only_cons;
+
 Select * from user_views; -> to check the list of views created by the user
 select * from user_tab_columns where table_name ='EMP_SAL_VIEW' -> to check the column details of a view.
 Advantage:
@@ -12,8 +23,8 @@ Advantage:
 3. Hide unwanted records from other users.
 
 Simple Views - Based on a single table. The records are not grouped. 
-does not contain distinct keyword or pseudocolumn or expression based columns.
-DMLs are allowed.
+  does not contain distinct keyword or pseudocolumn or expression based columns.
+  DMLs are allowed.
 
 Composite View - No DMLs are allowed . Other points not allowed in simple views are allowed in complex views.
 
@@ -36,3 +47,5 @@ So when new column is added in underlying table ,in this case it will not reflec
 2. If we drop an existing column from the base table , what will happen to view?
 If we query the view , it will throw error as it will not be able to find the column in the underlying table.
 3. How to check the list of objects used in a view? check user_dependencies table -> to find list of dependent objects.
+
+
