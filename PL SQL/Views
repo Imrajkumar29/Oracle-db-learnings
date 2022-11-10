@@ -26,3 +26,13 @@ If any changes are made in base tables , it will immediately reflect in views as
 But in case of materialized view , it will not reflect immediately. A refresh needs to be 
 performed to get the latest data from base tables to the materialized view.
 Refreshing materialized view -> exec dbms_mview.refresh('EMP10_MV');
+
+create or replace view emp_view as select * from emp;
+Question : Create or Replace view emp_view as select * from emp;
+1. If we add a new column to the base table , will that column get added to view?
+It will not be added. 
+The * used in the query gets replaced with the column names in the meta data stored. can check this in user_views table.
+So when new column is added in underlying table ,in this case it will not reflect in the view.
+2. If we drop an existing column from the base table , what will happen to view?
+If we query the view , it will throw error as it will not be able to find the column in the underlying table.
+3. How to check the list of objects used in a view? check user_dependencies table -> to find list of dependent objects.
