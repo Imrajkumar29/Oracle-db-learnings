@@ -48,4 +48,19 @@ So when new column is added in underlying table ,in this case it will not reflec
 If we query the view , it will throw error as it will not be able to find the column in the underlying table.
 3. How to check the list of objects used in a view? check user_dependencies table -> to find list of dependent objects.
 
+Write a procedure to create a view for all the tables in the given schema . The view name should be same as table name suffixed with "_V".
+
+Declare 
+v_sql VARCHAR2(2000);
+BEGIN
+FOR i in (SELECT table_name from user_tables) LOOP
+This line is commented to explain alternate-- for i in (select object_name from user_objects where object_type ='TABLE')loop 
+v_sql := 'create or replace view '||substr(i.table_name,1,28) ||'_v as select * from '||i.table_name;
+This line is commented to explain alternate--lv_sql :='create or replace view '||i.object_name||'_v as select * from '||i.object_name;
+dbms_output.put_line(v_sql);
+EXECUTE IMMEEDIATE v_sql;
+END LOOP;
+END;
+
+Note: Oracle Table Name greater than 30 character length (Up to 128 char) can be used from Oracle 12.2 Onwards 
 
