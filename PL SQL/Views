@@ -1,0 +1,18 @@
+Views - Presents data from the underlying table.Views display the same data in multiple ways.
+View do not hold any data of its own. Views are metadata only objects(or can be said as named queries).
+View will execute the query and fetch the underlying information from the base table.
+It is a logical table created on top of the base table.
+Create or  Replace force View emp_10 as select * from emp where deptno=10;
+force - If we want to create a view first before the base table is created. But This can be used only when the base table is created.
+Select * from user_views; -> to check the list of views created by the user
+select * from user_tab_columns where table_name ='EMP_SAL_VIEW' -> to check the column details of a view.
+Advantage:
+1. Can create any number of views as it is not going to take space.As it is not going to store the data of the base table.
+2. Display the same data in multiple ways.
+3. Hide unwanted records from other users.
+
+Simple Views - Based on a single table. The records are not grouped. 
+does not contain distinct keyword or pseudocolumn or expression based columns.
+DMLs are allowed.
+
+Composite View - No DMLs are allowed . Other points not allowed in simple views are allowed in complex views.o
