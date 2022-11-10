@@ -15,4 +15,14 @@ Simple Views - Based on a single table. The records are not grouped.
 does not contain distinct keyword or pseudocolumn or expression based columns.
 DMLs are allowed.
 
-Composite View - No DMLs are allowed . Other points not allowed in simple views are allowed in complex views.o
+Composite View - No DMLs are allowed . Other points not allowed in simple views are allowed in complex views.
+
+Materialized Views - This is also a named query which returns the output of a select statement. 
+whenever a materialized view is created , the data of the result set is stored in another physical location.
+Materialized view holds data in physical location. when materialized view is queried it will return data from 
+its physical location and noot look for the underlying table.
+Difference !
+If any changes are made in base tables , it will immediately reflect in views as it fetches data from underlying table.
+But in case of materialized view , it will not reflect immediately. A refresh needs to be 
+performed to get the latest data from base tables to the materialized view.
+Refreshing materialized view -> exec dbms_mview.refresh('EMP10_MV');
