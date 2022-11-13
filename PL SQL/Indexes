@@ -23,3 +23,51 @@ What is index?
      1. B-Tree Index.->Index organised tables, Reverse Key indexes, Descending indexes, B-Tree Cluster indexes.
      2. Bitmap and bitmap join indexes.->
      3. function Based Indexes.
+     
+B-Tree Index
+What is B-tree index ? How index data is stored?
+       stands for Balanced trees. B-Tree index is an ordered list of values divided into ranges along with
+       the rowid information stored in the index segment. access the records in the table with the help of rowid.
+       eg: create index idx_empno on emp_tab(empno);
+       
+       when the following query is run ,select * from employee where emp_id =5 . Oracle optimizer, Through meta data information identifies the index details.
+       Starts the search from index root map, searches all the records with 5 and goes to the particular record
+       Though it identifies the first instance of 5 , it continues the search till all instances of 5 are found (in case the column is non unique).       
+        
+Where to find the metadata information?
+      user_indexes -> select * from user_indexes where table_name ='EMP_T';
+      user_ind_columns->select * from user_ind_columns where table_name ='EMP_T';
+      user_ind_statistics->select * from user_ind_statistics where table_name ='EMP_T';
+      user_ind_expressions->select * from user_ind_expressions where table_name ='EMP_T';
+      
+How to find whether  index is used by the query?
+      By running the explain plan -> In table access-> index , object_name -> index name 
+      Once the query is run -> select * fromv$sql where sql_text like '%from emp where empno=5%'--> will give sql_id
+      select sql_id, operation,options, object_name,object_type, cost,cardinlaity from v$sql_plan where sql_id ='' use sql_id from previous query.
+      Another way -> monitoring the index
+      
+When to create B-tree index?
+      B-Tree index are suitable for columns containing high number of unique values. eG: account number, student reg number, employee id
+      Cardinality-> the ratio of distinct values to the number of table tows. A column with only two distinct values in a million row table would have low cardinality.
+      When cardinality is high , B-tree is recommended else Bitmap is recommended.
+
+What types of scan operations B-tree index will do?
+       Range scan- searches for a range of values . can be seen in explain plan.
+       Unique scan- to perform unique scan create an unique index. moment it finds the first key value goes through the execution and returns the record.
+                    unique scan is faster compared to range scan.
+       Full scan - full scan of the index data. 
+                    eg: create index idx_sal on emp(sal);/select sum(sal) from emp;       
+       Full scan(min/max) - eg : create index idx_sal on emp(sal);/select sum(sal) from emp;
+       Fast Full scan - create index idx_sal on emp(sal);/create index idx_empno on emp(empno); ->select empno,sal from emp;
+                        retrieves the data from two indexes ,combines and returns the output.
+                        
+Note:Oracle will not index the null values. 
+
+Can we create index for all columns?
+        not recommended .will slower the performance as we are duplicating the entire table once again. 
+        Instead can create and index organised table.Data is stored in the table in the sorted order itself.
+
+What are the advantages/disadvantages of B-tree index?
+        improves the performance.
+        dml statement performance wil degrade. when dml operation is performed, oracle has to manage the index also.
+        everytime a insert is performed oracle has to rearrange the data.
