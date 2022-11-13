@@ -1,0 +1,25 @@
+What is index? 
+    Index helps to access data from the database in a faster and easier manner. 
+    Index is a schema object that contains entry of each value of the indexd columns of the table and provides direct,fast access to rows.
+    Index will take the rowid and access the table data.
+    rowid - easiest way to indetify a record in a table. Physical address of where a particular row is located in the database.
+    Hexadecimal number which gives information about the dat file, segment,which extent this row is stored.
+ 
+ How to create index? (select * from  emp_t);
+     B-Tree Index-> create index idx1_btree1_empno on emp_t(empno); created on column where data is widely distributed.
+     Bitmap Index-> create bitmap index idx2_bitmap_deptno on emp_t(deptno); created on column with lesser distinct values. like dept no has only 3 distinct values
+     and they get repeated.eg: gender, pass or fail , yes or no type of values.
+     function Based Index->create index idx3_fn_ename on emp_t(upper(ename))
+     reverse key index-> create index idx4_revkey_sal on emp_t(sal) reverse -> to avoid index block contention reverse key index is used.
+     composite index -> create index idx5_comp_idx on emp_t(job,deptno)
+     
+ Where to check metadata info about indexes? -> name of the index , table name on which index is created, type of index.
+      user_indexes 
+      user_ind_columns->select * from user_ind_columns where table_name ='EMP_T';
+      user_ind_statistics->select * from user_ind_statistics where table_name ='EMP_T';
+      user_ind_expressions->select * from user_ind_expressions where table_name ='EMP_T'; for function based index.
+    
+ What are the types of Index?
+     1. B-Tree Index.->Index organised tables, Reverse Key indexes, Descending indexes, B-Tree Cluster indexes.
+     2. Bitmap and bitmap join indexes.->
+     3. function Based Indexes.
