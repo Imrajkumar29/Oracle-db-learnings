@@ -71,7 +71,35 @@ What are the advantages/disadvantages of B-tree index?
         improves the performance.
         dml statement performance wil degrade. when dml operation is performed, oracle has to manage the index also.
         everytime a insert is performed oracle has to rearrange the data.
+
+
+Bitmap Index
+        In a bitmap index, the database stores a bitmap for each index key. In a conventional B-tree index, one index entry points to a single row. 
+        In a bitmap index, each index key stores pointers to multiple rows.
+        Bitmap indexes are primarily designed for data warehousing or environments in which queries reference many columns in an ad hoc fashion.
+        Situations that may call for a bitmap index include:
+        The indexed columns have low cardinality, that is, the number of distinct values is small compared to the number of table rows.
+        eg :gender, status , etc which will have lesser distinct values.
+        The indexed table is either read-only or not subject to significant modification by DML statements.
+        Each bit in the bitmap corresponds to a possible rowid. If the bit is set, then the row with the corresponding rowid contains the key value.
+        A mapping function converts the bit position to an actual rowid, so the bitmap index provides the same functionality as a B-tree index 
+        although it uses a different internal representation.
+        Eg:
+        Value Row1 Row2 Row3 Row4 Row5 Row6 Row7
+        M      1    0   1     1    1    0    0
+        F      0    1   0     0    0    1    1
         
+        A mapping function converts each bit in the bitmap to a rowid of the customers table. 
+        Each bit value depends on the values of the corresponding row in the table.
+        For example, the bitmap for the M value contains a 1 as its first bit because the gender is M in the first row of the customers table.
+        The bitmap cust_gender='M' has a 0 for its the bits in rows 2, 6, and 7 because these rows do not contain M as their value.
+
+Bitmap index Issue with DML operations
+        If the indexed column in a single row is updated, then the database locks the index key entry (for example, M or F)
+        and not the individual bit mapped to the updated row. Because a key points to many rows,
+        DML on indexed data typically locks all of these rows. For this reason, bitmap indexes are not appropriate for many OLTP applications.
+
+
 Explain Function Based Index?
          A function-based index computes the value of a function or expression involving one or more columns and stores it in the index. 
          A function-based index can be either a B-tree or a bitmap index. 
@@ -96,7 +124,7 @@ Explain Function Based Index?
 
         SELECT * 
         FROM   employees
-        WHERE  UPPER(first_name) = 'AUDREY';
+        WHERE  UPPER(first_name) = 'AUDREY'; 
 
 Uses of Function-Based Indexes
         Function-based indexes are efficient for evaluating statements that contain functions in their WHERE clauses. 
