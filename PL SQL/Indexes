@@ -71,3 +71,37 @@ What are the advantages/disadvantages of B-tree index?
         improves the performance.
         dml statement performance wil degrade. when dml operation is performed, oracle has to manage the index also.
         everytime a insert is performed oracle has to rearrange the data.
+        
+Explain Function Based Index?
+ A function-based index computes the value of a function or expression involving one or more columns and stores it in the index. 
+ A function-based index can be either a B-tree or a bitmap index. 
+ The function used for building the index can be an arithmetic expression or an expression that contains a SQL function,
+ user-defined PL/SQL function, package function, or C callout.
+ The optimizer can use an index range scan on a function-based index for queries with expressions in WHERE clause.
+ 
+ For example, suppose you create the following function-based index:
+
+CREATE INDEX emp_total_sal_idx
+  ON employees (12 * salary * commission_pct, salary, commission_pct);
+  
+ The database can use the preceding index when processing queries below:
+SELECT   employee_id, last_name, first_name, 
+         12*salary*commission_pct AS "ANNUAL SAL"
+FROM     employees
+WHERE    (12 * salary * commission_pct) < 30000
+ORDER BY "ANNUAL SAL" DESC;
+
+CREATE INDEX emp_fname_uppercase_idx 
+ON employees ( UPPER(first_name) ); 
+
+SELECT * 
+FROM   employees
+WHERE  UPPER(first_name) = 'AUDREY';
+
+A function-based index is also useful for indexing only specific rows in a table. For example, the cust_valid column in the sh.
+customers table has either I or A as a value. To index only the A rows, you could write a function that returns
+a null value for any rows other than the A rows. You could create the index as follows:
+
+CREATE INDEX cust_valid_idx
+ON customers ( CASE cust_valid WHEN 'A' THEN 'A' END );
+
