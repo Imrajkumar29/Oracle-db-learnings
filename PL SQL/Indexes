@@ -137,4 +137,10 @@ Uses of Function-Based Indexes
 
         CREATE INDEX cust_valid_idx
         ON customers ( CASE cust_valid WHEN 'A' THEN 'A' END );
+        
+Reverse Key Index
+This is used to resolve the index block contention.
+The key column values are reversed and stored in the index segment.
+when we query a table with reverse key index  it will go for a full table scan as the key column values are not in the sorted under unlike a btree index.
+        
 
