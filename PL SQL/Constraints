@@ -19,4 +19,20 @@ Constraints -> Validate the data for business rules before getting stored into t
                       integrity constraints can be disabled temmporarily to avoid performance overhead when loading large amounts of data.
 
 Types of Contraints- NOT NULL, Unique Key, Primary Key, Foreign Key, Check, REF
-  
+
+NOT NULL - prohibits a column from having null values.
+
+eg : create table emp(empno number, 
+      ename varchar2(100) null, 
+      address1 varchar2(100) constraint address_not_null not null, 
+      address2 varchar2(100) not null,
+      address2 varchar3(100)
+      );
+by default there will be null constraint.Even if null is explicitly mentioned , it will not be in the meta data information.
+In the above eg address_not_null is the name of the constraint which is optional. 
+address2 will get created with system defined constraint name.
+
+meta data information
+      select * from user_constraints where table_name ='EMP';
+      select * from user_cons_columns where table_name ='EMP'
+Disabling a constraint -> alter table emp disable constraint address_not_null_cons;
