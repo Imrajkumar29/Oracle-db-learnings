@@ -39,3 +39,11 @@ Disabling a constraint -> alter table emp disable constraint address_not_null_co
       By default the constraint will be created with the enable mode, if we want to create it with disable mode see the below eg:
       eg: address1 varchar2(100) constraint address_not_null not null disable, 
 Drop a constraint-> Alter table emp drop constraint address_not_null;
+
+Question : Table with duplicate entries in production, cannot delete existing rows , However want to prevent further duplicate rows to get inserted?
+            Alter table emp add constraint empno_pk_cons primary key(empno) deferrable novalidate;
+            The deferrable novalidate keyword added to the constraint will not validate the existing rows in the table but
+      it will validate all the further dml operations that are performed in the table.
+            We Will not be to create a constraint using alter table statement for table with duplicate rows without the deferrable novalidate
+            keyword. If we try it will throw duplicate values exception.6+
+      
