@@ -49,7 +49,8 @@ Question1 : Table with duplicate entries in production, cannot delete existing r
 
 Question2 : Does Creating a primary key constraint always create an index automatically?
     Creating a primary key constraint creates an index automatically but not in all cases.
-    Creating a primary key will create a unique index , if an index is already not created on the column. 
+    Creating a primary key will create a unique index , if an index is not created on the column already.
+    Creating a primary key will create a non unique index when "deferrable novalidate" keyword is used.
     If an index is already created on the column, creating primary key will not create an unique index.
     Eg: step1 : create table emp(empno number, ename ,varchar2(100));
         step2 : alter table emp add constraint empno_pk_cons primary key(empno);
