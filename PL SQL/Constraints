@@ -68,4 +68,15 @@ Question3 :We use unique index or unique constraint to enforce uniqueness of a c
           Unique constraint is for data integrity whereas unique index is for performance improvement.
           Foreign Key can be created over a unique constraint, not over a unique index.
           Sometimes, we might be interested to create a unique index but not a unique constraint.
+          
+ Question4 :How many null values are allowed on Unique Constraint column in Oracle?
+ Null is not equal to anything in oracle. We cannot compare null using the = operator. 
+ The comparison can be done using a) nvl(variable_1,'@')=nvl(variable_2,'@'); b) variable_1 is null and variable_2 is null.
+ As each null value is different from one another in oracle (since null is not equal to null). When unique key constraint is in place in a column
+ in Oracle ,any number of null values can be there in the column. If the same is done in a column with primary key constraint , 
+ inserting null values is not possible.
+ 
+ 
+ 
+ 
       
