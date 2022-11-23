@@ -166,7 +166,16 @@ select * from dba_object_usage; - will show if index is used/not. alternate old 
 
 
 Benefits/Drawbacks of Index
-Benefits -> Perfomance improvement
-Drawbacks-> consumes considerable amount of space, DML performance might get impacted, index needs to be managed.
+    Benefits -> Perfomance improvement
+    Drawbacks-> consumes considerable amount of space, DML performance might get impacted, index needs to be managed.
         
+Question1. Can index be created in primary key column
+    When a table is created with primary key 2 things happen.
+    1. primary key constraint is created on the table
+    2. an unique index is created on primary key column automatically.
+
+Question2. Can more than one index be created in same column?
+    If a column has index oracle will not allow to create one more index in the same column. 
+    But an invisible index can be created on a column which already has an index.
+    create index idx1 on T(col1) invisible.
 
