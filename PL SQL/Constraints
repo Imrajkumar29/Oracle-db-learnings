@@ -1,0 +1,22 @@
+Data Integrity -> The data stored in oracle db should follow certain business rules. 
+      eg :reg no - has to be unique 
+      Gender -> should have either male or Female value only
+      Date of joining -> should be lesser than the current system date.
+      
+Ways to ensure Data Integrity 
+  Enforcing business rules with triggered stored database proedures
+  Enforcing the business rules in the code of a database application.(i.e making validations in the application UI when the data is entered).
+  Oracle Database integrity constraints which are rules defined at the column or object level that restrict values in the database.
+  Using stored procedures to completely control access to data.
+  
+Integrity Contraint - a rule that restricts the values in a database. 
+Use a contraint to define an integrity constraint.
+
+Constraints -> Validate the data for business rules before getting stored into the table.
+        Constraints are created as part of the table definition itself.
+        The rules are centralized. The data entered by all applications has to adhere to the same integrity constraints.
+        Flexibilty . integrity constraints can be disabled and enabled.
+                      integrity constraints can be disabled temmporarily to avoid performance overhead when loading large amounts of data.
+
+Types of Contraints- NOT NULL, Unique Key, Primary Key, Foreign Key, Check, REF
+  
