@@ -40,10 +40,21 @@ Disabling a constraint -> alter table emp disable constraint address_not_null_co
       eg: address1 varchar2(100) constraint address_not_null not null disable, 
 Drop a constraint-> Alter table emp drop constraint address_not_null;
 
-Question : Table with duplicate entries in production, cannot delete existing rows , However want to prevent further duplicate rows to get inserted?
+Question1 : Table with duplicate entries in production, cannot delete existing rows , However want to prevent further duplicate rows to get inserted?
             Alter table emp add constraint empno_pk_cons primary key(empno) deferrable novalidate;
             The deferrable novalidate keyword added to the constraint will not validate the existing rows in the table but
       it will validate all the further dml operations that are performed in the table.
             We Will not be to create a constraint using alter table statement for table with duplicate rows without the deferrable novalidate
-            keyword. If we try it will throw duplicate values exception.6+
+            keyword. If we try it will throw duplicate values exception.
+
+Question2 : Does Creating a primary key constraint always create an index automatically?
+    Creating a primary key constraint creates an index automatically but not in all cases.
+    Creating a primary key will create a unique index , if an index is already not created on the column. 
+    If an index is already created on the column, creating primary key will not create an unique index.
+    Eg: step1 : create table emp(empno number, ename ,varchar2(100));
+        step2 : alter table emp add constraint empno_pk_cons primary key(empno);
+        step3 : select * from user_constraints where table_name ='EMP';
+        step4:  select * from user_ where tablindexes table_name ='EMP';
+    Before step2 if : "create index t1 on emp(empno);" statement is used it will create a non unique index. 
+    In that case creating a primary key constraint will not creating a primary key constraint will not create an unique index.
       
