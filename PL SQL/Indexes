@@ -142,5 +142,31 @@ Reverse Key Index
 This is used to resolve the index block contention.
 The key column values are reversed and stored in the index segment.
 when we query a table with reverse key index  it will go for a full table scan as the key column values are not in the sorted under unlike a btree index.
+
+When to choose what type of index?
+    B-Tree indexes are suitable for columns containing high number of unique values. eg : account no, reg no.
+    Bitmap index are suitable for table with low cardinality value. 
+    Function based indexes are mainly used whenever the functions are used with columns or an expression is frequently used in where condition.
+    Reverse key index is mainly used to avoid the index block contention.
+
+How to know index is being used:
+ Check the explain plan. But explain plan will show the estimated plan. The plan that oracle is going to execute.
+ Actual plan can be obtained from the underlying data dictionary tables
+ Step1 : select * from v$sql where sql_text like 'from emp where empno=5%'; get the sql_id 
+ Step2 : select sql_id , operation, options, object_name, object_type, cost,cardinality from v$sql_plan where sql_id ='g5hutuqd';
+ v$sql_plan - is the actual explain plan
+ 
+How to Monitor index usage
+Step1 : Alter index Idx_EMPNO MONITORING USAGE; - will mark index for monitoring
+step2 : select * from emp where empno =7788; running the query which uses the index(run the application).
+step3 : Alter index Idx_EMPNO NOMONITORING USAGE;
+
+In case the index is being used it will be captured in dba_object_usage table. 
+select * from dba_object_usage; - will show if index is used/not. alternate old table ->v$object_usage
+
+
+Benefits/Drawbacks of Index
+Benefits -> Perfomance improvement
+Drawbacks-> consumes considerable amount of space, DML performance might get impacted, index needs to be managed.
         
 
