@@ -40,6 +40,28 @@ Disabling a constraint -> alter table emp disable constraint address_not_null_co
       eg: address1 varchar2(100) constraint address_not_null not null disable, 
 Drop a constraint-> Alter table emp drop constraint address_not_null;
 
+Unique key Constraint -> A unique constraint is a single field or combination of fields that uniquely defines a record.
+      Some of the fields can contain null values as long as the combination of values is unique.
+ Eg:
+ CREATE TABLE supplier
+( supplier_id numeric(10) NOT NULL,
+  supplier_name varchar2(50) NOT NULL,
+  contact_name varchar2(50),
+  CONSTRAINT supplier_unique UNIQUE (supplier_id, supplier_name)
+);
+
+Primary Key Constraint :In Oracle, a primary key is a single field or combination of fields that uniquely defines a record. 
+None of the fields that are part of the primary key can contain a null value. A table can have only one primary key.
+In Oracle, a primary key can not contain more than 32 columns.
+Eg: 
+CREATE TABLE supplier
+(
+  supplier_id numeric(10) not null,
+  supplier_name varchar2(50) not null,
+  contact_name varchar2(50),
+  CONSTRAINT supplier_pk PRIMARY KEY (supplier_id, supplier_name)
+);
+
 Question1 : Table with duplicate entries in production, cannot delete existing rows , However want to prevent further duplicate rows to get inserted?
             Alter table emp add constraint empno_pk_cons primary key(empno) deferrable novalidate;
             The deferrable novalidate keyword added to the constraint will not validate the existing rows in the table but
@@ -70,12 +92,17 @@ Question3 :We use unique index or unique constraint to enforce uniqueness of a c
           Sometimes, we might be interested to create a unique index but not a unique constraint.
           
  Question4 :How many null values are allowed on Unique Constraint column in Oracle?
- Null is not equal to anything in oracle. We cannot compare null using the = operator. 
- The comparison can be done using a) nvl(variable_1,'@')=nvl(variable_2,'@'); b) variable_1 is null and variable_2 is null.
- As each null value is different from one another in oracle (since null is not equal to null). When unique key constraint is in place in a column
- in Oracle ,any number of null values can be there in the column. If the same is done in a column with primary key constraint , 
- inserting null values is not possible.
+       Null is not equal to anything in oracle. We cannot compare null using the = operator. 
+       The comparison can be done using a) nvl(variable_1,'@')=nvl(variable_2,'@'); b) variable_1 is null and variable_2 is null.
+       As each null value is different from one another in oracle (since null is not equal to null). When unique key constraint is in place in a column
+       in Oracle ,any number of null values can be there in the column. If the same is done in a column with primary key constraint , 
+       inserting null values is not possible.
+       The unique key constraint behaves in a different way i different dbs like sql server.
  
+ Question5: Can We create Primary Key, NOT NULL and Unique Key constraint in the same column?
+      In oracle db we will not be able to create Unique and Primary key constraint on the same column.
+              we will be able to create NOT NULL and primary key constraint together.
+              The behavious varies across different db's like mysql, sqlserver.
  
  
  
