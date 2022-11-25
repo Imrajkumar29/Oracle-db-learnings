@@ -1,0 +1,49 @@
+Bind variables in Oracle database can be defined as the variables that we create in SQL* PLUS and then reference in PL/SQL. 
+
+Unlike user variables which can only be declared inside the declaration section of PL/SQL block you can declare bind variable
+anywhere in the host environment and that is the reason why we also refer bind variables as host variable.
+
+Variable command declares the bind variable which you can refer in PL/SQL.
+eg: VARIABLE v_bind1 VARCHAR2 (10);
+notice that I didn’t write any PL/SQL block or section here to declare this bind variable which is very unlike the user variable.
+
+To display the list of all the bind variables you simply have to write the keyword variable and execute. 
+eg :VARIABLE;
+
+To see the definition of the bind variable you have to write the keyword VARIABLE followed by the name of the bind variable in question
+eg: Variable v_bind2;
+
+Restriction:
+If you are creating a bind variable of NUMBER datatype then you can not specify the precision and scale.
+
+Initializing the Bind Variable
+ 1. using “Execute” command. -> Exec :v_bind1   := ‘Rebellion Rider’;
+ 2. Initialize the bind variable by explicitly writing execution section of PL/SQL block.
+ Eg:
+BEGIN
+:v_bind1 := ‘Manish Sharma’;
+END;
+/
+
+bind variables are referenced using colon (:v_bind1)
+
+Displaying the bind variable
+There are 3 ways of displaying the value held by bind variable in PL/SQL or say in Oracle Database.
+1.Using DBMS OUTPUT package.
+ eg: 
+    BEGIN
+    :v_bind1 := ‘RebellionRider’;
+    DBMS_OUTPUT.PUT_LINE(:v_bind1);
+    END;
+2.Using Print command.
+Print :v_bind1;
+Or
+Print v_bind1;
+
+3. Setting Auto print parameter on
+
+
+
+
+ 
+
