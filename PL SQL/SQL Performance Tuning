@@ -24,3 +24,20 @@ How to check SQL vs PL SQL performance tuning ?
 How SQL get executed internally?
 How index improve performance?
 Other general tips for performance improvement
+
+How an SQL statement gets executed internally?
+Once the SQL statement is sent to the database server it goes through a sequence of steps
+1. Syntax Check.->
+2. Semantic Check.-> checks if the objects mentioned/referred in the SQL statement is present in the database.
+3. Shared pool check.->  check the shared pool to reuse the parsed version of query if it was previously executed and available in cache.
+    The first three steps together is called parsing.
+4. optimization -> Generates multiple SQL plan and compares and picks the optimal plan for execution.
+5. Row source generator -> produces binary iterative plan for optimal plan from optimizer , that when executed will iterate through the steps and produce result set.
+6. Executor -> Executes the iterative plan and generates the output.
+This output/result will be returned back to the calling program.
+If the SQL statement is executed and optimal plan is already available with shared pool , it will directly go to execution and omits step 4,5.
+
+Scenario1 : valid sql statement select * from emp;
+Scenario2 
+Scenario3 
+Scenario4
