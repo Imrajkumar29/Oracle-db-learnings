@@ -1,0 +1,126 @@
+Dynamic SQL
+
+Static SQL->Any sql statement which does change during the runtime and remains fixed.
+	    Advantage : Already know if all the dependent objects are available while writing the statement.
+			These statements are hardcoded into our application, thus can be tuned for optimal performance.
+
+Native Dynamic SQL-> Any sql statement which is constructed at the runtime is called dynamic SQL.
+Dynamic SQL Gives Flexibility as it constructed on runtime, whereas static sql lets you execute only DML statements inside your PL/SQL block.
+Dynamic statement sql lets you execute only DML statements inside your PL/SQL block.
+Eg: Dynamic sql can be used to create a table, drop an index or truncate a table inside the PLSQL block.
+
+PL SQL statements also can be constructed dynamically.
+
+How do we use dynamic sql ?
+1. Execute immediate statement and 
+2. Open-For ,Fetch & Close block.
+3. Bulk Fetch, Bulk Execute Immediate, Bulk Forall, Bulk Collect into statement.
+
+Execute Immediate -> Using this we can parse and execute any SQL statement or PL/SQL Block dynamically in oracle database.
+		     Best suited for those SQL statements which returns single row of results.
+
+Syntax:
+EXECUTE IMMEDIATE dynamic_query
+[INTO user_defined_variable-1, user_defined_variable-2…] -> optional
+[USING bind_argument-1, bind_argument-2…] -> optional 
+[RETURNING|RETURN-INTO clause];  
+
+dynamic_query-> This query could be a SQL statement or a PL/SQL block. Moreover the compiler treats the dynamic query as a string of VARCHAR2 data type.
+USING clause-> if bind variable is speicified in your dynamic query then this clause helps you specify values for it which will be taken during runtime.
+RETURNING or RETURN INTO clause-> Return into clause is opposite to the USING clause. Whereas in using clause we supply the values to the dynamic query
+				 here in RETURNING INTO clause we get the values returned by the dynamic query. And store them into the specified list 
+				 of bind arguments. Again it is an Optional Clause.
+
+
+DML Select statement using execute immediate :
+
+Declare 
+sql_qry varchar(150);
+emp_tot number(3);
+BEGIN
+sql_qry:='SELECT count(*) from employees';
+Execute Immediate sql_qry into emp_tot;
+dbms_output.put_line('Total Employees are :'||emp_tot);
+end;
+/
+
+DDL Statement using execute immediate
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE TABLE tut_82(
+                	tut_num     NUMBER(3),
+                	tut_name    VARCHAR2(50)
+                )';
+END;
+/
+
+Another Version of DDL Statement
+SET SERVEROUTPUT ON;
+DECLARE
+    ddl_qry     VARCHAR2(150);
+BEGIN
+ddl_qry := 'CREATE TABLE tut_83('||
+                'tut_num     NUMBER(3),'||
+                'tut_name    VARCHAR2(50)'||
+                ')';
+EXECUTE IMMEDIATE ddl_qry;
+END;
+/
+
+Alter table using execute immediate
+SET SERVEROUTPUT ON;
+DECLARE
+ ddl_qry VARCHAR2(50);
+BEGIN
+ ddl_qry := 'ALTER TABLE tut_83
+        	 ADD  tut_date DATE';
+ EXECUTE IMMEDIATE ddl_qry;
+END;
+/  
+
+Drop table using execute immediate
+SET SERVEROUTPUT ON;
+DECLARE
+    ddl_qry     VARCHAR2 (100);
+BEGIN
+    ddl_qry := 'DROP TABLE tut_83';
+    EXECUTE IMMEDIATE ddl_qry;
+END;
+
+Insert DML With Bind Variable: Why?
+	The two biggest advantages of bind variables are security against SQL injections and performance enhancement by reducing hard parsing.
+
+What is this Using Clause of Execute Immediate statement?
+In static SQL we had to specify the value for bind variable after execution of the PL/SQL program. 
+While in Dynamic SQL we have to mention the values beforehand for all the bind variables. 
+Therefore, to specify the values for all the bind variables we take the help of USING clause of Execute Immediate Statement.
+ By applying ‘USING’ clause we list down all the values for every bind variable used in the SQL statement that we desire to execute dynamically.
+
+Eg:
+SET SERVEROUTPUT ON;
+DECLARE
+    sql_smt VARCHAR2 (150);
+BEGIN
+    sql_smt :=  'INSERT INTO stu_info (student_name) VALUES (:stu_name)';
+    EXECUTE IMMEDIATE sql_smt USING 'Steve';
+    commit;
+END;
+/
+The value you are assigning to your bind variable through the USING clause must either be the same or compatible 
+with the data type of the column of the table into which you are inserting it.
+
+Multiple bind variables in Execute immediate statement
+Eg:
+Set Serveroutput On;
+Declare
+    Sql_Smt Varchar2(150);
+Begin
+    Sql_Smt := 'UPDATE stu_info SET student_name = :new_name 
+    WHERE student_name = :old_name ';
+    Execute Immediate Sql_Smt Using 'Strange','Leo';   
+End;
+
+Important 
+In native dynamic SQL we need to list down the values for all the bind variables used in the SQL query beforehand.
+You cannot use schema object names such as table name as bind argument in native dynamic SQL.
+Data type of bind argument should either match or be compatible with the datatype of its corresponding context.
+The order of values in the list of USING clause must match with that of the bind variables in the query.
