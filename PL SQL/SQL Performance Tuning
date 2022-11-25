@@ -36,6 +36,18 @@ Once the SQL statement is sent to the database server it goes through a sequence
 6. Executor -> Executes the iterative plan and generates the output.
 This output/result will be returned back to the calling program.
 If the SQL statement is executed and optimal plan is already available with shared pool , it will directly go to execution and omits step 4,5.
+Hard parsing -> If the parsed version of the query is not available in shared pool, then database has to regenerate plan and row source for executor.
+                when hard parse is happening it is called library cache miss.-> Lower the performance
+Soft parsing -> If the query was found in shared pool , then database don't have to generate plan , instead it can directly reuse
+                the availabe parsed version and plan for execution.
+                when soft parse is happening it is called library cache hit. -> Higher the performance
+
+ select * from v$sql where sql_text like  '%employees%' and sql_text not like '%v$sql%';
+ select * from employees where employee_id =100;
+ select * from employees where employee_id =101;
+ 
+ Though the structure of both the above sql is same. An hard parsing will happen when the second sql is run. using a bind variable will increase soft parsing.
+ 
 
 Scenario1 : valid sql statement select * from emp;
 Scenario2 
