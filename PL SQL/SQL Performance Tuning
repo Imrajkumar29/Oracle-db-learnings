@@ -1,0 +1,26 @@
+The process of analysing and reducing the processing time is called performance tuning
+Plays an important role in OLTP systems where the response time is very less. eg . credit card, debit card transaction, ATM cash withdrawal.
+OLTP -Online Transaction Processing system.
+OLAP -Online analytical processing system.
+
+SQL Tuning - Iterative process to improve the performance of SQL statement to  measurable and achievable goals.
+
+Tuning from Developers aspect -> tuning the SQL/PLSQL and underlying objects
+-> Analyze and create index
+-> Rewrite SQL
+-> Using Hints
+-> Partition Pruning 
+-> All improvements done from SQL & its related objects.
+
+Tuning from DBA aspect 
+-> Tuning the instance memory parameters , optimizer settings to improve the performance.
+-> Tuning the server , CPU, RAM & Network.
+
+How to identify the long running queries?
+Where to start with SQL Performance Tuning?
+What tools are available to help in addressing performance issue ?
+What technical knowledge is needed to tune thye SQL queries
+How to check SQL vs PL SQL performance tuning ?
+How SQL get executed internally?
+How index improve performance?
+Other general tips for performance improvement
