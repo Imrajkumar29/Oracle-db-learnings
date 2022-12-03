@@ -1,1 +1,61 @@
+How to start with PLSQL Tuning?
+
+1. Manual inspection of code.  
+-will work when no of lines in the code is less
+- may not work if too many plsql calls internally.
+2. Execute the code with multiple log statements and analyze the statement that takes more time.
+3. Tune the SQL code and PL SQL code seperately.
+
+DBMS_PROFILER-  a package provided by oracle to capture the information about the PL SQL code execution. 
+used to identify the performance bottleneck.
+
+How to use DBMS_PROFILER
+Environment setup( one time setup) -> Profiler Execution (executed any no of times) -> Analyze profiler data-> Optimize the PL SQL. 
+
+Environment Setup
+1. DBMS_PROFILER will be available as part of sys schema. 
+2. Ensure you have the privilege to execute thye package ( if not , grant execute permission from sys schema)
+3. Create the profiler tables to capture the profiler data.
+
+
+Find below procs for testing 
+Create or Replace procedure Proc_c
+as 
+lv_avg_sal number;
+begin
+for i in 1..50 loop
+select avg (salary) into lv_avg_sal from employees;
+end loop;
+end;
+/
+show errors;
+
+Create or Replace procedure Proc_b 
+as 
+lv_date date;
+begin
+for i in 1..50 loop 
+proc_c;
+select sysdate into lv_date from dual;
+end loop;
+end;
+/
+show errors;
+
+Create or Replace procedure Proc_a 
+as 
+lv_count number;
+begin
+select count(*) into lv_count from user_tables,all_objects;
+for i in 1..50 loop 
+proc_b;
+end loop;
+end;
+/
+show errors;
+
+
+
+
+
 
