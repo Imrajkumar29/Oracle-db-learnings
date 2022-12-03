@@ -90,6 +90,13 @@ and plsql_profiler_units.UNIT_NUMBER = plsql_profiler_data.UNIT_NUMBER
 and plsql_profiler_units.runid = plsql_profiler_runs.runid
 ORDER BY
     plsql_profiler_data.total_time DESC;
+    
+
+Scripts to clear the profiler tables
+
+truncate table plsql_profiler_data;
+delete from plsql_profiler_units;
+delete from plsql_profiler_runs;
 
 
 
