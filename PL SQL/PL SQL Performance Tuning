@@ -1,29 +1,35 @@
 How to start with PLSQL Tuning?
-
-1. Manual inspection of code.  
--will work when no of lines in the code is less
-- may not work if too many plsql calls internally.
-2. Execute the code with multiple log statements and analyze the statement that takes more time.
-3. Tune the SQL code and PL SQL code seperately.
+  1. Manual inspection of code.  
+  -will work when no of lines in the code is less
+  - may not work if too many plsql calls internally.
+  2. Execute the code with multiple log statements and analyze the statement that takes more time.
+  3. Tune the SQL code and PL SQL code seperately.
 
 DBMS_PROFILER-  a package provided by oracle to capture the information about the PL SQL code execution. 
-used to identify the performance bottleneck.
+  used to identify the performance bottleneck.
 
 How to use DBMS_PROFILER
-Environment setup( one time setup) -> Profiler Execution (executed any no of times) -> Analyze profiler data-> Optimize the PL SQL. 
+  Environment setup( one time setup) -> Profiler Execution (executed any no of times) -> Analyze profiler data-> Optimize the PL SQL. 
 
 Environment Setup
-1. DBMS_PROFILER will be available as part of sys schema. 
-2. Ensure you have the privilege to execute thye package ( if not , grant execute permission from sys schema)
-3. Create the profiler tables to capture the profiler data.
+  1. DBMS_PROFILER will be available as part of sys schema. 
+  2. Ensure you have the privilege to execute thye package ( if not , grant execute permission from sys schema)
+  3. Create the profiler tables to capture the profiler data.
 
 run the following statement to create 3 profiler tables
-@c:\Learning\OracleApp\rdbms\admin\proftab.sql
-select * from user_tables where table_name like'%PROF%';
-Tables created ->PLSQL_PROFILER_RUNS,PLSQL_PROFILER_UNITS,PLSQL_PROFILER_DATA,PLSQL_PROFILER_RUNNUMBER
+  @c:\Learning\OracleApp\rdbms\admin\proftab.sql
+  select * from user_tables where table_name like'%PROF%';
+  Tables created ->PLSQL_PROFILER_RUNS,PLSQL_PROFILER_UNITS,PLSQL_PROFILER_DATA,
+  Sequence created ->PLSQL_PROFILER_RUNNUMBER
 
 running profiler execution
-
+  exec dbms_profiler.start_profiler('test_run_1');
+  exec proc_a;
+  exec dbms_profiler.stop_profiler();
+  
+  select * from  plsql_profiler_runs; -> one row for each execution ,-> runid -> plsql_profiler_units
+  select * from plsql_profiler_units; -> anonymous blocks, procs, functions etc. unit_number ->plsql_profiler_data
+  select * from plsql_profiler_data; -> contains line by line information. how much time a particular line is invoked. runid -> plsql_profiler_runs
 
 Find below procs for testing 
 Create or Replace procedure Proc_c
