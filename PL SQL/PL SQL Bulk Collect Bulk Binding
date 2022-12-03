@@ -1,0 +1,50 @@
+PL SQL and SQL Communicate as follows : To run select into or DML statement , the PL SQL engine sends the query or DML statement to the SQL engine.
+The SQL engine runs the query or DML statement and returns the result to the PL SQL engine.
+
+Within oracle there are two engines that executes the code
+PL SQL Engine -> executes all procedural code
+SQL Engine -> executes all sql statements
+
+Binding
+Assigning values to PL/SQL variables that appear in SQL statements is called binding.
+
+What is Context Switching?
+  Whenever you write a PL/SQL block or say a PL/SQL program and execute it, the PL/SQL runtime engine starts processing it line by line.
+  This engine processes all the PL/SQL statements by itself but it passes all the SQL statements which you have coded into that PL/SQL block to the SQL runtime engine. 
+  Those SQL statements will then get processed separately by the SQL engine. Once it is done processing them the SQL engine then returns the result back to the PL/SQL 
+  engine.So that a combined result can be produced by the latter. This to and fro hopping of control is called context switching.
+  For eg: in the below program the control swithces between PL SQL engine and SQL engine 1000 times.
+  
+  Declare 
+  lv_name varchar2(100);
+  Begin
+  For I in 1..1000 loop
+  select ename into lv_name from emp where empno =I;
+  end loop;
+  end;
+  
+How does context switching affect the query performance?
+  Context switching has a direct impact on the performance of the query. The higher the hopping of controls the greater will be the overhead which
+  in turn will degrade the performance. This means that lesser the context switching better will be the query performance.
+  
+Bulk Binding
+  Bulk binding is a process by which entire sql statement information will be binded back to PL SQL variable in a single switch or fewer no of switches.
+  
+Types of Binding
+in-bind-> the value from PL SQL engine is assigned to SQL engine. eg:insert , merge , update statements stores pl sql variable in the database.
+out-bind-> from SQL statements information is returned back to PL SQL variable. eg : returning into clause of an insert, update,delete statement.
+Define -> When a select or fetch statement is used in a loop. assigns db value to a PL SQL variable.
+
+Bulk data Processing
+  For in binds and out binds , bulk SQL uses bulk binding , that is , it binds entire collection of values at once.
+  A query that uses bulk SQL can return any number of rows , without using a FETCH statement for each one.
+  To implement bulk binding oracle provides two statements
+    Bulk Collect Clause
+    Forll Statement
+  The process of fetching batches of data from PL/SQL runtime engine to SQL engine and vice versa is called Bulk Data Processing
+
+How many bulk data processing statements do we have?
+We have one bulk data processing clause which is Bulk Collect and one bulk data processing statement which is FORALL in Oracle Database
+  
+
+Bulk collect is all about reducing context switches and improving the performance of the query.
