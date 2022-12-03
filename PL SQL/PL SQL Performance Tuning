@@ -17,6 +17,13 @@ Environment Setup
 2. Ensure you have the privilege to execute thye package ( if not , grant execute permission from sys schema)
 3. Create the profiler tables to capture the profiler data.
 
+run the following statement to create 3 profiler tables
+@c:\Learning\OracleApp\rdbms\admin\proftab.sql
+select * from user_tables where table_name like'%PROF%';
+Tables created ->PLSQL_PROFILER_RUNS,PLSQL_PROFILER_UNITS,PLSQL_PROFILER_DATA,PLSQL_PROFILER_RUNNUMBER
+
+running profiler execution
+
 
 Find below procs for testing 
 Create or Replace procedure Proc_c
