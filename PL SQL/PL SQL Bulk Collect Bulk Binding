@@ -32,8 +32,14 @@ Bulk Binding
   
 Types of Binding
 in-bind-> the value from PL SQL engine is assigned to SQL engine. eg:insert , merge , update statements stores pl sql variable in the database.
+when a collection variable is used to transfer from dml content data to table, it is called in bind. Using Forall statement the inbind operation can be performed.
+
 out-bind-> from SQL statements information is returned back to PL SQL variable. eg : returning into clause of an insert, update,delete statement.
+when dml operation is performed and modified data/(result of a dml statement) has to be put into a collection , outbind happens. 
+using (returning clause,bulk  collectect into) with dml statement this is accomplished.
+
 Define -> When a select or fetch statement is used in a loop. assigns db value to a PL SQL variable.
+whenever we want to hold output of select statement/cursor fetch statement in a plsql collection variable. bulk collect into statement is used for doing this.
 
 Bulk data Processing
   For in binds and out binds , bulk SQL uses bulk binding , that is , it binds entire collection of values at once.
@@ -48,3 +54,4 @@ We have one bulk data processing clause which is Bulk Collect and one bulk data 
   
 
 Bulk collect is all about reducing context switches and improving the performance of the query.
+
