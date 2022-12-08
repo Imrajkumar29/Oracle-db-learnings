@@ -34,7 +34,7 @@ Types of Binding
 in-bind-> the value from PL SQL engine is assigned to SQL engine. eg:insert , merge , update statements stores pl sql variable in the database.
 when a collection variable is used to transfer from dml content data to table, it is called in bind. Using Forall statement the inbind operation can be performed.
 
-out-bind-> from SQL statements information is returned back to PL SQL variable. eg : returning into clause of an insert, update,delete statement.
+out-bind-> from SQL statements information is returned back to PL SQL variable. eg : returning into clause of an insert, update,delete, execute immediate statement.
 when dml operation is performed and modified data/(result of a dml statement) has to be put into a collection , outbind happens. 
 using (returning clause,bulk  collectect into) with dml statement this is accomplished.
 
@@ -70,6 +70,20 @@ Eg:
   For i in lv_emp_name_list.first..lv_emp_name_list.last
   loop 
   dbms_output.put_line(lv_emp_name_list(i));
+  end loop;
+  end;
+ 
+ Using Bulk Collect to load data from table to PL sql Collection
+  declare
+  type emp_name_list is Table of varchar2(100);
+  lv_emp_name_list2 emp_name_list :=emp_name_list();
+  Begin
+
+  select first_name bulk collect into lv_emp_name_list2 from employees order by employee_id;
+
+  For i in lv_emp_name_list2.first..lv_emp_name_list2.count
+  loop 
+  dbms_output.put_line(lv_emp_name_list2(i));
   end loop;
   end;
 
