@@ -55,3 +55,21 @@ We have one bulk data processing clause which is Bulk Collect and one bulk data 
 
 Bulk collect is all about reducing context switches and improving the performance of the query.
 
+Traditional way to load data from table to PL sql collection
+Eg:
+  set serveroutput on;
+  declare
+  type emp_name_list is Table of varchar2(100);
+  lv_emp_name_list emp_name_list :=emp_name_list();
+  Begin
+  For i in (select * from employees)
+  loop
+  lv_emp_name_list.extend;
+  lv_emp_name_list(lv_emp_name_list.last):=i.first_name;
+  end loop;
+  For i in lv_emp_name_list.first..lv_emp_name_list.last
+  loop 
+  dbms_output.put_line(lv_emp_name_list(i));
+  end loop;
+  end;
+
