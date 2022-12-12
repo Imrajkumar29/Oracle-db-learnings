@@ -23,4 +23,28 @@ From Oracle version 12.2 the table keyword is optional.
     /
 
     select * from table(fn_get_ename_list());
+    
+Oracle Table Function: Table Function loads all the values into collection, and finally the collection would be returned to caller.
+
+Pipelined Function returns the value as and when the value is ready to send back caller.
+    The pipelined Keyword indicates that the function will return rows iteratively
+    pipe row statement causes a table function to pipe a row and continue processing.
+    A pipelined table function must have a return statementthat does not return a value.
+
+    create or replace function fn_get_ename_list_p return t_ename_list
+    PIPELINED as 
+    lv_ename_list t_ename_list:=t_ename_list();
+    Begin
+    For I in (select first_name from employees)
+    loop
+    dbms_lock.sleep(1);
+    --lv_ename_list.extend;
+    --LV_ENAME_LIST(LV_ENAME_LIST.LAST):=I.first_name;
+    pipe row(i.first_name);
+    END LOOP;
+    --RETURN LV_ENAME_LIST;
+    RETURN;
+    END;
+    /
+    select * from Table(fn_get_ename_list_p()) where rownum<=3;
 
