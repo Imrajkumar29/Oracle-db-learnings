@@ -1,0 +1,26 @@
+Table Function: used to return data from collection variable.
+
+    Create or Replace Type t_num_list is Table of number;
+    /
+    Select * from Table(t_num_list(1,2,3,4,5));
+
+The TABLE function can be used with a function returning collection variable. The collection variable is used as relational data source to query data.
+From Oracle version 12.2 the table keyword is optional.
+
+    create or replace type t_ename_list is table of varchar2(30);
+    /
+    create or replace function fn_get_ename_list return t_ename_list
+    as 
+    lv_ename_list t_ename_list:=t_ename_list();
+    Begin
+    For I in (select first_name from employees)
+    loop
+    lv_ename_list.extend;
+    LV_ENAME_LIST(LV_ENAME_LIST.LAST):=I.first_name;
+    END LOOP;
+    RETURN LV_ENAME_LIST;
+    END;
+    /
+
+    select * from table(fn_get_ename_list());
+
