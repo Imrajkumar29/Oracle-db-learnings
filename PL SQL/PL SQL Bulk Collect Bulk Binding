@@ -149,5 +149,12 @@ Limitations of Forall
   Forall must be followed by single DML statement
   Usage of other statements within forall is not allowed 
   you cannot refer individual record of collection instead the collection as whole will be used by DML statement.
+  Collection subscript must be index variable. Expression in subscript is not allowed. like lv_emp_name_list(i+1) is not allowed.
   
+Difference between for and forall
+  For is iterative statement which executes for each and every value specified in the range. Forall is not an Iterative statement. Its a declarative
+  statement to execute the DML statement with all the values given in the collection.
+  Any number of statements can be written within loop and end loop of for statement. Only one DML statement is allowed after forall statement.
+  Forall - no context switching
+  individual records of collection can be accessed in for loop.Collection will be used as a whole in DML statement.
   
