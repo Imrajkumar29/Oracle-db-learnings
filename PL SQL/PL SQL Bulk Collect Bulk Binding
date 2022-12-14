@@ -111,3 +111,43 @@ BEGIN
     CLOSE exp_cur;
 END;
 /
+
+Forall Statement
+  The forall statement runs one DML statement multiple times, with different values in the values and where clauses
+  The different values come from existing, populated collections. It is usually faster than the FOR loop.
+  Forall executes the DML statement for each and every row present in the collection without switching between SQL and PL SQL engine.
+  
+  PL SQL Block to load all employee from collection into employee_bkup table
+  
+  Traditional for loop 
+      Declare 
+    Type t_emp_list is Table of employees%rowtype;
+    lv_emp_list t_emp_list :=t_emp_list();
+    Begin
+    select * bulk collect into lv_emp_list from employees;
+    for i in lv_emp_list.first..lv_emp_list.last
+    loop
+    insert into employees_bkup values lv_emp_list(i);
+    end loop;
+    end;
+  
+Using Forall : note that there is no loop and end loop statements after the forall statement. it is followed by only one dml statement.
+  Declare 
+Type t_emp_list is Table of employees%rowtype;
+lv_emp_list t_emp_list :=t_emp_list();
+Begin
+select * bulk collect into lv_emp_list from employees;
+forall i in lv_emp_list.first..lv_emp_list.last
+    insert into employees_bkup values lv_emp_list(i);
+end;
+
+Advantages of Forall
+  Reduces the context switches bw the sql and plsql engine and improves the performance of insert statement.
+  Effectively transfer the data from collection into table
+  
+Limitations of Forall
+  Forall must be followed by single DML statement
+  Usage of other statements within forall is not allowed 
+  you cannot refer individual record of collection instead the collection as whole will be used by DML statement.
+  
+  
