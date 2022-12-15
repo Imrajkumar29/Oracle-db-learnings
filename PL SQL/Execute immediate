@@ -123,3 +123,19 @@ Important
 	You cannot use schema object names such as table name as bind argument in native dynamic SQL.
 	Data type of bind argument should either match or be compatible with the datatype of its corresponding context.
 	The order of values in the list of USING clause must match with that of the bind variables in the query.
+Using execute immediagte with bulk collect clause
+/
+SET SERVEROUTPUT ON;
+DECLARE
+    TYPE emp_coll IS TABLE OF employees%rowtype;
+    emp_records emp_coll;
+    sql_qry VARCHAR2(150);
+BEGIN
+    sql_qry := 'SELECT * FROM employees';
+    EXECUTE IMMEDIATE sql_qry BULK COLLECT INTO emp_records;
+    FOR idx IN emp_records.first..emp_records.COUNT
+        LOOP
+            DBMS_OUTPUT.PUT_LINE(idx||' - '||emp_records(idx).first_name);
+        END LOOP;
+END;
+/
