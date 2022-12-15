@@ -1,12 +1,12 @@
 Dynamic SQL
 
-Static SQL->Any sql statement which does change during the runtime and remains fixed.
+Static SQL->Any sql statement which does not change during the runtime and remains fixed.
 	    Advantage : Already know if all the dependent objects are available while writing the statement.
 			These statements are hardcoded into our application, thus can be tuned for optimal performance.
 
 Native Dynamic SQL-> Any sql statement which is constructed at the runtime is called dynamic SQL.
 Dynamic SQL Gives Flexibility as it constructed on runtime, whereas static sql lets you execute only DML statements inside your PL/SQL block.
-Dynamic statement sql lets you execute only DML statements inside your PL/SQL block.
+
 Eg: Dynamic sql can be used to create a table, drop an index or truncate a table inside the PLSQL block.
 
 PL SQL statements also can be constructed dynamically.
