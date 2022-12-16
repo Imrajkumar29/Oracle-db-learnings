@@ -101,7 +101,9 @@ BEGIN
     OPEN exp_cur;
     LOOP
         FETCH exp_cur BULK COLLECT INTO fname;
-        EXIT WHEN fname.count=0;
+        dbms_output.put_line('row count '||exp_cur%ROWCOUNT); -- prints 107
+        dbms_output.put_line('collection fetch count '||fname.count); -- 107 in first iteration, 0 in second iteration. 
+        EXIT WHEN fname.count=0; -- exp_cur%notfound can also be used to exit the loop and the inner for loop can be used outside
         --Print data
         FOR idx IN fname.FIRST.. fname.LAST
         LOOP
