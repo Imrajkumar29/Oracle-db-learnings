@@ -1,0 +1,50 @@
+user_erros- table to check compile time errors
+  Logical errors will be raised on runtime - this is called exception.
+
+Exception 
+  Any abnormal condition or say event that interrupts the normal flow of your program’s instructions at run time is an exception.
+  Or in simple words you can say an exception is a run time error.
+
+There are two types of PL/SQL exceptions in Oracle database.
+
+System-defined exceptions -> Named Exception, Un-named Exception
+User-defined exceptions
+
+Info byte:
+  Oracle avails two utility functions SQLCODE & SQLERRM to retrieve the error code and message for last occur exception.
+
+System-defined exceptions 
+  System defined exceptions majorly have a negative error code and error message. These errors have a short name which is used with the exception handler.
+  
+User-Define Exceptions
+Unlike System-Define Exception, User-Define Exceptions are raised explicitly in the body of the PL/SQL block
+(more specifically inside the BEGIN-END section) using the RAISE Statement.
+
+There are three ways of declaring user-defined exceptions in Oracle Database.
+    By declaring a variable of EXCEPTION type in declaration section.
+    Declare user-defined exception using PRAGMA EXCEPTION_INIT function.
+    RAISE_APPLICATION_ERROR method.
+    
+Eg for the first way mentioned above
+          SET SERVEROUTPUT ON;
+          DECLARE
+            var_dividend NUMBER := 24;
+            var_divisor NUMBER := 0;
+            var_result NUMBER;
+            ex_DivZero EXCEPTION;
+          BEGIN
+            IF var_divisor = 0 THEN
+              RAISE ex_DivZero;
+            END IF;
+            var_result := var_dividend/var_divisor;
+            DBMS_OUTPUT.PUT_LINE('Result = ' ||var_result);
+            EXCEPTION WHEN ex_DivZero THEN
+                DBMS_OUTPUT.PUT_LINE('Error Error - Your Divisor is Zero');
+          END;
+          /
+
+
+
+
+no data found
+exact fetch returns more than one row
