@@ -58,16 +58,52 @@ How many errors can we generate using RAISE_APPLICATION_ERROR procedure?
     Eg: In this exception handling section they have called a SQLERRM function using DBMS OUTPUT statement. 
     This is a utility function provided by Oracle which retrieves the error message for the last occurred exception
     
- ACCEPT var_age NUMBER PROMPT 'What is your age';
-DECLARE
-  age   NUMBER := &var_age;
-BEGIN
-  IF age < 18 THEN
-    RAISE_APPLICATION_ERROR (-20008, 'you should be 18 or above for the DRINK!');
-  END IF; 
-  DBMS_OUTPUT.PUT_LINE ('Sure, What would you like to have?'); 
-  EXCEPTION WHEN OTHERS THEN
-    DBMS_OUTPUT.PUT_LINE (SQLERRM);
-END;
+       ACCEPT var_age NUMBER PROMPT 'What is your age';
+      DECLARE
+        age   NUMBER := &var_age;
+      BEGIN
+        IF age < 18 THEN
+          RAISE_APPLICATION_ERROR (-20008, 'you should be 18 or above for the DRINK!');
+        END IF; 
+        DBMS_OUTPUT.PUT_LINE ('Sure, What would you like to have?'); 
+        EXCEPTION WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE (SQLERRM);
+      END;
     
+What is PRAGMA EXCEPTION_INIT?
+Pragma Exception_Init is a two part statement where first part is made up of keyword PRAGMA and second part is the Exception_Init call.
 
+PRAGMA Keyword
+A pragma is a compiler directive which indicates that the Statements followed by keyword PRAGMA is a compiler directive statement
+this means that the statement will be processed at the compile time & not at the runtime.
+
+PRAGMA Exception_Init
+Exception_init helps you in associating an exception name with an Oracle error number. 
+In other words we can say that using Exception_Init you can name the exception.
+
+Why name the exception?
+Yes, there is a way of declaring user-define exception without the name and that is by using Raise_Exception_Error procedure.
+This indeed is a simple and easy way but as we learnt in the last tutorial that to handle exceptions without name we use OTHERS exception handler.
+
+You can save all those time wasting efforts just by naming the exception, that way you can design an exception handler specific to the name
+of your exception which will be easily traceable. This is the advantage of naming the exception.
+
+      DECLARE
+        ex_age    EXCEPTION;
+        age       NUMBER    := 17;
+        PRAGMA EXCEPTION_INIT(ex_age, -20008);
+      BEGIN
+        IF age<18 THEN
+          RAISE_APPLICATION_ERROR(-20008, 'You should be 18 or above for the drinks!');
+        END IF;
+
+        DBMS_OUTPUT.PUT_LINE('Sure! What would you like to have?');
+
+        EXCEPTION WHEN ex_age THEN
+          DBMS_OUTPUT.PUT_LINE(SQLCODE||' '||SQLERRM);   
+      END;
+      /
+      
+      Output of above proc:
+      -20008 ORA-20008: You should be 18 or above for the drinks!
+PL/SQL procedure successfully completed.
