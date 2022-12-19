@@ -88,31 +88,71 @@ Eg:
   end;
 
 Bulk Collect with Fetch statement
-SET SERVEROUTPUT ON;
-DECLARE
---Create an explicit cursor
-    CURSOR exp_cur IS
-    SELECT first_name FROM employees;
+    SET SERVEROUTPUT ON;
+    DECLARE
+    --Create an explicit cursor
+        CURSOR exp_cur IS
+        SELECT first_name FROM employees;
 
-    --Declare collection for holding the data 
-    TYPE nt_fName   IS TABLE OF VARCHAR2 (20);
-    fname   nt_fName;
-BEGIN
-    OPEN exp_cur;
-    LOOP
-        FETCH exp_cur BULK COLLECT INTO fname;
-        dbms_output.put_line('row count '||exp_cur%ROWCOUNT); -- prints 107
-        dbms_output.put_line('collection fetch count '||fname.count); -- 107 in first iteration, 0 in second iteration. 
-        EXIT WHEN fname.count=0; -- exp_cur%notfound can also be used to exit the loop and the inner for loop can be used outside
-        --Print data
-        FOR idx IN fname.FIRST.. fname.LAST
+        --Declare collection for holding the data 
+        TYPE nt_fName   IS TABLE OF VARCHAR2 (20);
+        fname   nt_fName;
+    BEGIN
+        OPEN exp_cur;
         LOOP
-            DBMS_OUTPUT.PUT_LINE (idx||' '||fname(idx) );
-        END LOOP; 
-    END LOOP;
-    CLOSE exp_cur;
-END;
-/
+            FETCH exp_cur BULK COLLECT INTO fname;
+            dbms_output.put_line('row count '||exp_cur%ROWCOUNT); -- prints 107
+            dbms_output.put_line('collection fetch count '||fname.count); -- 107 in first iteration, 0 in second iteration. 
+            EXIT WHEN fname.count=0; -- exp_cur%notfound can also be used to exit the loop and the inner for loop can be used outside
+            --Print data
+            FOR idx IN fname.FIRST.. fname.LAST
+            LOOP
+                DBMS_OUTPUT.PUT_LINE (idx||' '||fname(idx) );
+            END LOOP; 
+        END LOOP;
+        CLOSE exp_cur;
+    END;
+    /
+
+Bulk Collect With LIMIT Clause In Oracle Database
+
+What do you mean by excessive memory exhaustion caused by bulk collect?
+Whenever we retrieve or fetch a large number of records using bulk collect clause, our program starts consuming a lot of memory in order 
+to be fast and efficient. This is not just any memory. Unlike the SGA memory that is shared among all the sessions of Oracle Database, 
+the program consumes the PGA memory that is specifically allotted for each session.
+This degrades the performance of the database. This means that our query must surely be performing well but at the same time, our database may not.
+LIMIT clause restricts the number of rows fetched using BULK COLLECT with FETCH statement.
+So always remember the LIMIT clause can only be used when you are using BULK COLLECT with FETCH-INTO statement.
+It cannot be used when you are using bulk collect with SELECT-INTO statement.
+
+“The BULK COLLECT into statement cannot be used repeatedly to append results into a table.
+Instead, it silently truncates the target table each time. “
+
+This is true.  However, if you need to use BULK COLLECT to append results into a single nested table data structure, it is trivial 
+to come up with a workaround using the MULTISET syntax.
+
+    SET SERVEROUTPUT ON;
+    DECLARE
+        CURSOR exp_cur IS
+        SELECT first_name FROM employees;
+
+        TYPE nt_fName   IS TABLE OF VARCHAR2(20);
+        fname   nt_fName;
+        fname_agg  nt_fName:= nt_fName();
+    BEGIN
+        OPEN exp_cur;
+        loop
+        FETCH exp_cur BULK COLLECT INTO fname LIMIT 10; 
+        fname_agg:= fname_agg multiset union all fname;
+        exit when exp_cur%notfound;
+        end loop;
+        CLOSE exp_cur;
+        --Print data
+        FOR idx IN 1 .. fname_agg.COUNT
+        LOOP
+            DBMS_OUTPUT.PUT_LINE (idx||' '||fname_agg(idx) );
+        END LOOP;
+    END;
 
 Forall Statement
   The forall statement runs one DML statement multiple times, with different values in the values and where clauses
