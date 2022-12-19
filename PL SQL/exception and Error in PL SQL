@@ -15,6 +15,8 @@ Info byte:
 
 System-defined exceptions 
   System defined exceptions majorly have a negative error code and error message. These errors have a short name which is used with the exception handler.
+  no data found , too_many_rows
+exact fetch returns more than one row'
   
 User-Define Exceptions
 Unlike System-Define Exception, User-Define Exceptions are raised explicitly in the body of the PL/SQL block
@@ -42,12 +44,6 @@ Eg for the first way mentioned above
                 DBMS_OUTPUT.PUT_LINE('Error Error - Your Divisor is Zero');
           END;
           /
-
-
-
-
-no data found
-exact fetch returns more than one row'
 
 What is RAISE_APPLICATION_ERROR method?
   RAISE APPLICATION ERROR is a stored procedure which comes in-built with Oracle software.  Using this procedure you can associate 
