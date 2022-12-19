@@ -11,7 +11,7 @@ System-defined exceptions -> Named Exception, Un-named Exception
 User-defined exceptions
 
 Info byte:
-  Oracle avails two utility functions SQLCODE & SQLERRM to retrieve the error code and message for last occur exception.
+  Oracle avails two utility functions SQLCODE & SQLERRM to retrieve the error code and message for last occured exception.
 
 System-defined exceptions 
   System defined exceptions majorly have a negative error code and error message. These errors have a short name which is used with the exception handler.
@@ -47,4 +47,31 @@ Eg for the first way mentioned above
 
 
 no data found
-exact fetch returns more than one row
+exact fetch returns more than one row'
+
+What is RAISE_APPLICATION_ERROR method?
+  RAISE APPLICATION ERROR is a stored procedure which comes in-built with Oracle software.  Using this procedure you can associate 
+  an error number with the custom error message.   Combining both the error number as well as the custom error message you can
+  compose an error string which looks similar  to those default error strings which are displayed by Oracle engine when an error occurs.
+  You can find RAISE_APPLICATION_ERROR procedure inside DBMS_STANDARD package.
+  
+How many errors can we generate using RAISE_APPLICATION_ERROR procedure?
+    RAISE_APPLICATION_ERROR procedure allows us to number our errors from -20,000 to -20,999 thus we can say that using RAISE_APPLICATION_ERROR 
+    procedure we can generate 1000 errors.
+    
+    Eg: In this exception handling section they have called a SQLERRM function using DBMS OUTPUT statement. 
+    This is a utility function provided by Oracle which retrieves the error message for the last occurred exception
+    
+ ACCEPT var_age NUMBER PROMPT 'What is your age';
+DECLARE
+  age   NUMBER := &var_age;
+BEGIN
+  IF age < 18 THEN
+    RAISE_APPLICATION_ERROR (-20008, 'you should be 18 or above for the DRINK!');
+  END IF; 
+  DBMS_OUTPUT.PUT_LINE ('Sure, What would you like to have?'); 
+  EXCEPTION WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE (SQLERRM);
+END;
+    
+
