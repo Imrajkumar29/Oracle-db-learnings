@@ -56,6 +56,68 @@ END;
 
 delete from superheroes;
 
+Table Auditing
+Table auditing means keeping a track of all the dml activities performed on a specific table of the database for example which user Inserted,
+updated or deleted a row from the table and when. It is like spying on the users who are messing your table’s data.
+
+Suppose you want to keep an eye on the users who are inserting, updating or deleting data from the ‘Superheroes’ table. Let’s see how we can achieve this. 
+
+CREATE TABLE sh_audit(
+  new_name varchar2(30),
+  old_name varchar2(30),
+  user_name varchar2(30),
+  entry_date varchar2(30),
+  operation  varchar2(30)
+);
+
+This table sh_audit has 5 columns which will store the auditing information such as the new data inserted or updated, 
+old data which is updated or deleted from the table, name of the user who did it along with the date and time, also the type of DML operation performed.
+
+Next we will write a trigger on the source table superheroes and will store the data into the auditing table sh_audit.
+
+CREATE OR REPLACE trigger superheroes_audit
+BEFORE INSERT OR DELETE OR UPDATE ON superheroes
+FOR EACH ROW
+ENABLE
+DECLARE
+  v_user varchar2 (30);
+  v_date  varchar2(30);
+BEGIN
+  SELECT user, TO_CHAR(sysdate, 'DD/MON/YYYY HH24:MI:SS') INTO v_user, v_date  FROM dual;
+  IF INSERTING THEN
+    INSERT INTO sh_audit (new_name,old_name, user_name, entry_date, operation) 
+    VALUES(:NEW.SH_NAME, Null , v_user, v_date, 'Insert');  
+  ELSIF DELETING THEN
+    INSERT INTO sh_audit (new_name,old_name, user_name, entry_date, operation)
+    VALUES(NULL,:OLD.SH_NAME, v_user, v_date, 'Delete');
+  ELSIF UPDATING THEN
+    INSERT INTO sh_audit (new_name,old_name, user_name, entry_date, operation) 
+    VALUES(:NEW.SH_NAME, :OLD.SH_NAME, v_user, v_date,'Update');
+  END IF;
+END;
+/
+
+Pseudo Records (New/Old)
+If you will carefully see the Insert statements used in the IF-THEN-ELSIF statements in the above code, we used some Pseudo Records such as ‘:New’ or ‘:Old’ followed by the name of the column of our source table sh_name.
+
+These Psuedo Records helps us in fetching data from the sh_name column of the underlying source table ‘Superheroes’ and storing it into the audit table sh_audit.
+
+Pseudo Record ‘: NEW’, allows you to access a row currently being processed. In other words, when a row is being inserted or updated into the superheroes table. Whereas Pseudo Record ‘: OLD’ allows you to access a row which is already being either Updated or Deleted from the superheroes table.
+
+In order to fetch the data from the source table, you have to first write the proper Pseudo Record (New/Old) followed by dot (.) and the name of the column of the source table whose value you want to fetch. For example in our case we want to fetch the data from sh_name column which belongs to our source table superheroes. Thus we will write “: New. sh_name” for fetching the current value and to fetch the previously stored value we will write “: OLD. sh_name”. Once the values are fetched the INSERT dml will store these values into the respective columns of the audit table.
+
+Restriction on Pseudo Record
+For an INSERT trigger, OLD contain no values, and NEW contain the new values.
+For an UPDATE trigger, OLD contain the old values, and NEW contain the new values.
+For a DELETE trigger, OLD contain the old values, and NEW contain no values.
+
+INSERT INTO superheroes VALUES ('Superman');
+Similarly you can write Update and Delete DML statements on Superheroes table.
+
+UPDATE SUPERHEROES SET SH_NAME = 'Ironman' WHERE SH_NAME='Superman';
+Or
+DELETE FROM superheroes WHERE SH_NAME = 'Ironman';
+____________________________________________________________________________________________________________________________________________________________
 A DDL Statement – Next type of triggering statement can be a DDL Statement such as CREATE or ALTER.
 These triggers can also be executed either BEFORE or AFTER the execution of your DDL statement. 
 These triggers are generally used by DBAs for auditing purposes. And they really come in handy
@@ -66,7 +128,7 @@ A system event. – Yes, you can create a trigger on a system event. And by a sy
 A User Events – Another type of triggering event can be User Events such as log off or log on onto your database. 
 You can create a trigger which will either execute before or after the event. Furthermore, 
 it will record the information such as time of event occur, the username who created it.
-
+________________________________________________________________________________________________________________________________________________________________
 Types of Database Triggers
 There are 5 types of triggers in the Oracle database. 3 of them are based on the triggering event 
 DML Trigger, DDL Trigger,System or Database Event triggers, 
@@ -96,7 +158,7 @@ Using triggers we can gain strong control over the security.
 We can also collect statistical information on the table access.
 We can automatically generate values for derived columns such as auto increment numeric primary key.
 Using database triggers we can prevent the invalid transactions.
-
+_________________________________________________________________________________________________________
 Restriction on The Database Triggers
 The maximum size of the database trigger body must not exceed 32,760 bytes. This is because triggers’ bodies are stored in LONG datatypes columns.
 A trigger may not issue transaction control statements or TCL statements such as COMMIT, ROLLBACK or SAVEPOINT. 
@@ -104,5 +166,6 @@ All operations performed when the trigger fires, become part of a transaction. T
 to the respective rolling back or committing of the operations performed. Any function or procedure called by a database trigger may not issue a 
 transactional control statement. That is unless it contains an autonomous transaction.
 Declaring LONG or LONG RAW variable is not permissible in the body of the trigger.
+__________________________________________________________________________________________________________
    
 
