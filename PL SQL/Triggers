@@ -11,6 +11,51 @@ You can program your trigger to execute either BEFORE or AFTER executing your DM
 For example, you can create a trigger which will get fired Before the Update. Similarly, 
 you can create a trigger which will get triggered after the execution of your INSERT DML statement.
 
+
+CREATE TABLE superheroes (
+  sh_name VARCHAR2 (15)
+); 
+
+CREATE OR REPLACE TRIGGER bi_Superheroes
+BEFORE INSERT ON superheroes
+FOR EACH ROW
+ENABLE
+DECLARE
+  v_user  VARCHAR2 (15);
+BEGIN
+ SELECT user INTO v_user FROM dual;
+ DBMS_OUTPUT.PUT_LINE('You Just Inserted a Row Mr.'|| v_user); 
+END;
+/
+
+INSERT INTO superheroes VALUES ('Ironman');
+
+Above three examples showed you 3 different triggers for 3 different DML events on one table.
+Don’t you think that if we can cover all these 3 events in just 1 trigger
+
+INSERT, UPDATE, DELETE All in One DML Trigger Using IF-THEN-ELSIF
+CREATE OR REPLACE TRIGGER tr_superheroes
+BEFORE INSERT OR DELETE OR UPDATE ON superheroes
+FOR EACH ROW
+ENABLE
+DECLARE
+  v_user  VARCHAR2(15);
+BEGIN
+
+  SELECT 
+    user INTO v_user FROM dual;
+  IF INSERTING THEN
+    DBMS_OUTPUT.PUT_LINE('one line inserted by '||v_user);
+  ELSIF DELETING THEN
+    DBMS_OUTPUT.PUT_LINE('one line Deleted by '||v_user);
+  ELSIF UPDATING THEN
+    DBMS_OUTPUT.PUT_LINE('one line Updated by '||v_user);
+  END IF;
+END;
+/
+
+delete from superheroes;
+
 A DDL Statement – Next type of triggering statement can be a DDL Statement such as CREATE or ALTER.
 These triggers can also be executed either BEFORE or AFTER the execution of your DDL statement. 
 These triggers are generally used by DBAs for auditing purposes. And they really come in handy
@@ -59,4 +104,5 @@ All operations performed when the trigger fires, become part of a transaction. T
 to the respective rolling back or committing of the operations performed. Any function or procedure called by a database trigger may not issue a 
 transactional control statement. That is unless it contains an autonomous transaction.
 Declaring LONG or LONG RAW variable is not permissible in the body of the trigger.
+   
 
