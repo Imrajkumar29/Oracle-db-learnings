@@ -98,13 +98,19 @@ END;
 /
 
 Pseudo Records (New/Old)
-If you will carefully see the Insert statements used in the IF-THEN-ELSIF statements in the above code, we used some Pseudo Records such as ‘:New’ or ‘:Old’ followed by the name of the column of our source table sh_name.
-
+If you will carefully see the Insert statements used in the IF-THEN-ELSIF statements in the above code,
+we used some Pseudo Records such as ‘:New’ or ‘:Old’ followed by the name of the column of our source table sh_name.
 These Psuedo Records helps us in fetching data from the sh_name column of the underlying source table ‘Superheroes’ and storing it into the audit table sh_audit.
 
-Pseudo Record ‘: NEW’, allows you to access a row currently being processed. In other words, when a row is being inserted or updated into the superheroes table. Whereas Pseudo Record ‘: OLD’ allows you to access a row which is already being either Updated or Deleted from the superheroes table.
+Pseudo Record ‘: NEW’, allows you to access a row currently being processed. In other words, 
+when a row is being inserted or updated into the superheroes table. 
+Whereas Pseudo Record ‘: OLD’ allows you to access a row which is already being either Updated or Deleted from the superheroes table.
 
-In order to fetch the data from the source table, you have to first write the proper Pseudo Record (New/Old) followed by dot (.) and the name of the column of the source table whose value you want to fetch. For example in our case we want to fetch the data from sh_name column which belongs to our source table superheroes. Thus we will write “: New. sh_name” for fetching the current value and to fetch the previously stored value we will write “: OLD. sh_name”. Once the values are fetched the INSERT dml will store these values into the respective columns of the audit table.
+In order to fetch the data from the source table, you have to first write the proper Pseudo Record (New/Old) followed by dot (.)
+and the name of the column of the source table whose value you want to fetch.
+For example in our case we want to fetch the data from sh_name column which belongs to our source table superheroes. 
+Thus we will write “: New. sh_name” for fetching the current value and to fetch the previously stored value we will write “: OLD. sh_name”.
+Once the values are fetched the INSERT dml will store these values into the respective columns of the audit table.
 
 Restriction on Pseudo Record
 For an INSERT trigger, OLD contain no values, and NEW contain the new values.
@@ -117,6 +123,9 @@ Similarly you can write Update and Delete DML statements on Superheroes table.
 UPDATE SUPERHEROES SET SH_NAME = 'Ironman' WHERE SH_NAME='Superman';
 Or
 DELETE FROM superheroes WHERE SH_NAME = 'Ironman';
+
+As soon as you execute any of these DML statements on the underlying table superheroes, 
+the trigger will execute in the background and insert the audit data into the audit table sh_audit.
 ____________________________________________________________________________________________________________________________________________________________
 A DDL Statement – Next type of triggering statement can be a DDL Statement such as CREATE or ALTER.
 These triggers can also be executed either BEFORE or AFTER the execution of your DDL statement. 
