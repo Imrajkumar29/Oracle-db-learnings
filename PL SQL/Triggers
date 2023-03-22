@@ -177,4 +177,24 @@ transactional control statement. That is unless it contains an autonomous transa
 Declaring LONG or LONG RAW variable is not permissible in the body of the trigger.
 __________________________________________________________________________________________________________
    
+synchronized backup copy of a table using DML Trigger
 
+CREATE TABLE superheroes_backup AS SELECT * FROM superheroes WHERE 1=2;
+
+CREATE or REPLACE trigger Sh_Backup
+BEFORE INSERT OR DELETE OR UPDATE ON superheroes
+FOR EACH ROW
+ENABLE 
+BEGIN
+  IF INSERTING THEN
+    INSERT INTO superheroes_backup (SH_NAME) VALUES (:NEW.SH_NAME);  
+  ELSIF DELETING THEN
+    DELETE FROM superheroes_backup WHERE SH_NAME =:old.sh_name; 
+  ELSIF UPDATING THEN
+    UPDATE superheroes_backup 
+    SET SH_NAME =:new.sh_name WHERE SH_NAME =:old.sh_name;
+  END IF;
+END;
+/
+
+After successful execution of the trigger, changes from the main table will get reflected on the backup table too.
