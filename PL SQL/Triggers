@@ -127,22 +127,73 @@ DELETE FROM superheroes WHERE SH_NAME = 'Ironman';
 As soon as you execute any of these DML statements on the underlying table superheroes, 
 the trigger will execute in the background and insert the audit data into the audit table sh_audit.
 ____________________________________________________________________________________________________________________________________________________________
+Types of Database Triggers
+There are 5 types of triggers in the Oracle database. 3 of them are based on the triggering event 
+DML Trigger, DDL Trigger,System or Database Event triggers, 
+Instead-of Trigger, Compound triggers
+
+____________________________________________________________________________________________________________________________________________________________
 A DDL Statement – Next type of triggering statement can be a DDL Statement such as CREATE or ALTER.
 These triggers can also be executed either BEFORE or AFTER the execution of your DDL statement. 
 These triggers are generally used by DBAs for auditing purposes. And they really come in handy
 when you want to keep an eye on the various changes on your schema. For instance, who created the object or which user. Just like some cool spy tricks.
 
+DDL triggers are the triggers which are created over DDL statements such as CREATE, DROP or ALTER. 
+Using this type of trigger you can monitor the behavior and force rules on your DDL statements.
+
+CREATE TABLE schema_audit
+  (
+    ddl_date       DATE,
+    ddl_user       VARCHAR2(15),
+    object_created VARCHAR2(15),
+    object_name    VARCHAR2(15),
+    ddl_operation  VARCHAR2(15)
+  );
+  
+  In case of schema/user auditing using DDL trigger creates this table in the same schema (like HR)
+  and in case of Database auditing using DDL trigger create this table in sys or system schema (sys or system both schemas can be used to perform database auditing).
+  
+DDL Trigger for Schema Auditing
+First you need to log on to the database using the schema which you want to audit. For example suppose you want to create the DDL trigger to audit the HR schema then log on to your database using the HR schema.
+
+Then Write, Execute and Compile the below trigger.
+
+CREATE OR REPLACE TRIGGER hr_audit_tr 
+AFTER DDL ON SCHEMA
+BEGIN
+    INSERT INTO schema_audit VALUES (
+sysdate, 
+sys_context('USERENV','CURRENT_USER'), 
+ora_dict_obj_type, 
+ora_dict_obj_name, 
+ora_sysevent);
+END;
+/
+DDL Trigger for Database Auditing.
+Similar to the schema auditing with some minor changes in the above trigger you can audit your database too.
+But for that first you need to logon to the database using either SYS user or SYSTEM user.
+
+After doing that you have to create the above shown table under the same user so that your trigger can dump the auditing data without any read and write errors.
+
+CREATE OR REPLACE TRIGGER db_audit_tr 
+AFTER DDL ON DATABASE
+BEGIN
+    INSERT INTO schema_audit VALUES (
+sysdate, 
+sys_context('USERENV','CURRENT_USER'), 
+ora_dict_obj_type, 
+ora_dict_obj_name, 
+ora_sysevent);
+END;
+/
+If you notice the second line of this code carefully then you will find that we have replaced the keyword Schema 
+with the keyword Database which indicates that this trigger will work for the whole database and will perform the underlying work.
 A system event. – Yes, you can create a trigger on a system event. And by a system event, I mean shut down or startup of your database.
 
 A User Events – Another type of triggering event can be User Events such as log off or log on onto your database. 
 You can create a trigger which will either execute before or after the event. Furthermore, 
 it will record the information such as time of event occur, the username who created it.
 ________________________________________________________________________________________________________________________________________________________________
-Types of Database Triggers
-There are 5 types of triggers in the Oracle database. 3 of them are based on the triggering event 
-DML Trigger, DDL Trigger,System or Database Event triggers, 
-Instead-of Trigger, Compound triggers
-
 Instead-of Trigger
 This is a type of trigger which enables you to stop and redirect the performance of a DML statement. 
 Often this type of trigger helps you in managing the way you write to non-updatable views. You can also 
