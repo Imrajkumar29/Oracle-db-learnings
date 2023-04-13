@@ -189,10 +189,58 @@ END;
 If you notice the second line of this code carefully then you will find that we have replaced the keyword Schema 
 with the keyword Database which indicates that this trigger will work for the whole database and will perform the underlying work.
 A system event. – Yes, you can create a trigger on a system event. And by a system event, I mean shut down or startup of your database.
-
+________________________________________________________________________________________________________________________________________________________________
 A User Events – Another type of triggering event can be User Events such as log off or log on onto your database. 
 You can create a trigger which will either execute before or after the event. Furthermore, 
 it will record the information such as time of event occur, the username who created it.
+Types of Database Event Triggers.
+Schema Level Event Triggers
+Database Level Event Triggers
+
+Schema level event triggers can work on some specific schemas while the database event triggers have database wide scope.
+In other words database event triggers can be created to monitor the system event activities of either a specific user/schema or the whole database.
+
+Conn hr/hr
+Step 2: Create a Table
+Next you will need a table to store the logon and logoff data.
+
+CREATE TABLE hr_evnt_audit
+  (
+    event_type VARCHAR2(30),
+    logon_date DATE,
+    logon_time VARCHAR2(15),
+    logof_date DATE,
+    logof_time VARCHAR2(15)
+  );
+  
+  This trigger will fire every time HR user logs on to the database and respective values will be stored into the table which we just created in the step 2.
+  
+ CREATE OR REPLACE TRIGGER hr_lgon_audit
+AFTER LOGON ON SCHEMA
+BEGIN
+  INSERT INTO hr_evnt_audit VALUES(
+    ora_sysevent,
+    sysdate,
+    TO_CHAR(sysdate, 'hh24:mi:ss'),
+    NULL,
+    NULL
+  );
+  COMMIT;
+END;
+/
+Log off event
+CREATE OR REPLACE TRIGGER log_off_audit
+BEFORE LOGOFF ON SCHEMA
+BEGIN
+  INSERT INTO hr_evnt_audit VALUES(
+    ora_sysevent,
+    NULL,
+    NULL,
+    SYSDATE,
+    TO_CHAR(sysdate, 'hh24:mi:ss')
+  );
+  COMMIT;
+END;
 ________________________________________________________________________________________________________________________________________________________________
 Instead-of Trigger
 This is a type of trigger which enables you to stop and redirect the performance of a DML statement. 
