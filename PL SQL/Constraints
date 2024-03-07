@@ -77,9 +77,9 @@ Question2 : Does Creating a primary key constraint always create an index automa
     Eg: step1 : create table emp(empno number, ename ,varchar2(100));
         step2 : alter table emp add constraint empno_pk_cons primary key(empno);
         step3 : select * from user_constraints where table_name ='EMP';
-        step4:  select * from user_ where tablindexes table_name ='EMP';
+        step4:  select * from user_tablindexes where  table_name ='EMP';
     Before step2 if : "create index t1 on emp(empno);" statement is used it will create a non unique index. 
-    In that case creating a primary key constraint will not creating a primary key constraint will not create an unique index.
+    In that case creating a primary key constraint  will not create an unique index.
     
     Note1: Creating a primary key will create a non unique index when "deferrable novalidate" keyword is used.
     Note2: scenario1-> Dropping a constraint will drop the underlying index provided the index was created as part of the constraint creation.
