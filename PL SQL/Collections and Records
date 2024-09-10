@@ -223,7 +223,7 @@ exists(n)- checks if element is available in index n.
 Eg code for Nested Tables:
 Declare 
 Type v_nested_tab_type is table of varchar(30);
-vday v_nested_tab_type :=  v_nested_tab_type(null,null,null,null,null,null,null);
+v_day v_nested_tab_type :=  v_nested_tab_type(null,null,null,null,null,null,null);
 BEGIN
 v_day(1):= 'Monday';
 v_day(2):='Tuesdsay';
@@ -235,7 +235,23 @@ v_day(7):='Sunday';
 dbms_output.put_line('v_day(1)='||v_day(1));
 dbms_output.put_line('v_day(2)='||v_day(2));
 dbms_output.put_line('v_day(2)='||v_day(3));
+dbms_output.put_line('v_day.last='||v_day.last);
+if(v_day.exists(4)) then
+dbms_output.put_line('v_day element available in index 4');
+end if;
+v_day.extend();
+v_day(8):='Again Monday';
+dbms_output.put_line('v_day.last='||v_day.last);
 END;
+
+Statement processed.
+v_day(1)=Monday
+v_day(2)=Tuesdsay
+v_day(2)=Wednesday
+v_day.last=7
+v_day element available in index 4
+v_day.last=8
+
 
 Associative arrays ( formerly called PLSQL Table or Index by table): It is a set of key-value pairs. Each key is unique index used to locate the associated value.
 The index can be either of string type(varchar2,long) or pls_integer.
