@@ -123,6 +123,70 @@ Important
 	You cannot use schema object names such as table name as bind argument in native dynamic SQL.
 	Data type of bind argument should either match or be compatible with the datatype of its corresponding context.
 	The order of values in the list of USING clause must match with that of the bind variables in the query.
+
+
+
+
+### 4. **`RETURNING INTO` Clause (For DML statements)**:
+The `RETURNING INTO` clause is used when executing `INSERT`, `UPDATE`, or `DELETE` statements that include a `RETURNING` clause. This allows you to retrieve values from the modified rows.
+
+#### Example (`RETURNING INTO` Clause):
+```sql
+DECLARE
+  v_emp_name VARCHAR2(100);
+  v_emp_id NUMBER;
+BEGIN
+  EXECUTE IMMEDIATE 'INSERT INTO employees (employee_id, first_name, last_name, salary)
+                    VALUES (employees_seq.NEXTVAL, ''John'', ''Doe'', 60000)
+                    RETURNING employee_id, first_name INTO :emp_id, :emp_name'
+  RETURNING INTO v_emp_id, v_emp_name;
+
+  DBMS_OUTPUT.PUT_LINE('New Employee ID: ' || v_emp_id);
+  DBMS_OUTPUT.PUT_LINE('New Employee Name: ' || v_emp_name);
+END;
+/
+```
+Statement processed.
+New Employee ID: 23
+New Employee Name: John
+
+- The `RETURNING INTO` clause is used to fetch the newly inserted `employee_id` and `first_name` values after the `INSERT` statement is executed.
+
+### 5. **Combining `USING` and `RETURNING INTO` Clauses**:
+You can combine both the `USING` and `RETURNING INTO` clauses in one `EXECUTE IMMEDIATE` statement.
+
+#### Example (Using `USING` and `RETURNING INTO` Together):
+```sql
+DECLARE
+  v_new_salary NUMBER := 75000;
+  v_emp_name VARCHAR2(100);
+  v_emp_id NUMBER := 101;
+BEGIN
+  EXECUTE IMMEDIATE 'UPDATE employees SET salary = :new_salary WHERE employee_id = :emp_id
+                    RETURNING first_name INTO :emp_name'
+  USING v_new_salary, v_emp_id
+  RETURNING INTO v_emp_name;
+
+  DBMS_OUTPUT.PUT_LINE('Updated Employee Name: ' || v_emp_name);
+END;
+/
+
+### 7. **Using Bind Variables in Dynamic PL/SQL Blocks**:
+In addition to SQL statements, you can dynamically execute PL/SQL blocks using `EXECUTE IMMEDIATE`.
+
+#### Example (Dynamic PL/SQL Block):
+```sql
+DECLARE
+  v_salary_increase NUMBER := 5000;
+BEGIN
+  EXECUTE IMMEDIATE 'BEGIN
+                      UPDATE employees SET salary = salary + :sal_increase WHERE department_id = 10;
+                    END;'
+  USING v_salary_increase;
+END;
+/
+```
+
 Using execute immediagte with bulk collect clause
 /
 SET SERVEROUTPUT ON;
@@ -139,3 +203,5 @@ BEGIN
         END LOOP;
 END;
 /
+
+
