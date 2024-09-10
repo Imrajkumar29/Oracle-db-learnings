@@ -1,0 +1,47 @@
+### High Watermark (HWM) in Oracle
+
+The **high watermark (HWM)** in Oracle refers to a marker that indicates the highest point in a table's data blocks that has ever been used to store data. It essentially divides the blocks in a segment (such as a table or index) into two categories:
+1. **Blocks Below the HWM**: These blocks have been used at some point to store data.
+2. **Blocks Above the HWM**: These blocks have not yet been used.
+
+**Key Points:**
+- **Initial Use**: When a table is initially populated with data, the HWM rises as data is inserted into new blocks.
+- **Deleting Data**: When data is deleted, the HWM does not automatically decrease, meaning that even if the data is deleted, the space is not immediately reusable unless specific actions are taken.
+- **Impact on Scans**: When a full table scan occurs, Oracle reads all blocks up to the HWM, even if many blocks are empty or sparsely populated. This can lead to inefficiencies.
+
+### Shrink in Oracle
+
+**Shrink** is an operation in Oracle that helps in reclaiming unused space below the HWM and possibly lowering the HWM itself. The `SHRINK` operation is part of the `ALTER TABLE` command and is typically performed in two steps:
+1. **Compact the Table**: Moves the rows closer together to fill up the empty spaces caused by deletes or updates.
+2. **Adjust the HWM**: If possible, Oracle adjusts the HWM downward to the last block containing data, making the space above the new HWM available for other uses.
+
+#### Syntax
+```sql
+ALTER TABLE table_name ENABLE ROW MOVEMENT;
+ALTER TABLE table_name SHRINK SPACE [COMPACT];
+```
+- **ENABLE ROW MOVEMENT**: This must be enabled before a shrink operation, allowing rows to move within the table.
+- **SHRINK SPACE**: Shrinks the table by compacting the rows and reducing the HWM.
+- **SHRINK SPACE COMPACT**: Only compacts the rows without immediately lowering the HWM. The HWM can be lowered in a subsequent operation.
+
+### Significance of HWM and Shrink
+
+1. **Performance Improvement**:
+   - **HWM Impact on Performance**: High HWM can cause Oracle to scan more blocks than necessary, which impacts the performance of queries, especially full table scans.
+   - **Shrinking Tables**: Reduces the number of blocks that need to be read, thereby improving the performance of table scans.
+
+2. **Space Management**:
+   - **Reclaim Unused Space**: After significant deletions, the space below the HWM can become fragmented. Shrinking helps in reclaiming this unused space.
+   - **Storage Efficiency**: Lowering the HWM makes the reclaimed space available for other database objects, optimizing storage usage.
+
+3. **Maintenance**:
+   - **Housekeeping**: Regularly managing the HWM and performing shrink operations can be part of database maintenance to ensure optimal performance and space utilization.
+
+### Example Scenario
+Imagine a table where a large number of rows have been deleted. Although the rows are gone, the HWM remains the same, and a full table scan would still read all the blocks up to the HWM, causing unnecessary I/O. By performing a shrink operation, you compact the table, potentially lowering the HWM, which then results in faster query performance and better space utilization.
+
+### Summary
+
+- **High Watermark (HWM)**: Marks the highest point of used space in a table or segment.
+- **Shrink**: An operation to compact data and potentially lower the HWM to reclaim unused space and improve performance.
+- **Significance**: These concepts are crucial for database performance optimization, space management, and efficient storage utilization.
