@@ -108,6 +108,185 @@ Question3 :We use unique index or unique constraint to enforce uniqueness of a c
       In oracle db we will not be able to create Unique and Primary key constraint on the same column.
               we will be able to create NOT NULL and primary key constraint together.
               The behavious varies across different db's like mysql, sqlserver.
+
+
+Absolutely! Let's go through the **CHECK** constraint in Oracle, rectifying the mistake regarding the use of non-deterministic functions like `SYSDATE`.
+
+### Overview of the `CHECK` Constraint
+
+A **CHECK** constraint in Oracle is used to enforce data integrity by specifying a condition that each row in a table must satisfy. When the condition evaluates to `FALSE` or is violated, Oracle raises an error, preventing invalid data from being inserted or updated.
+
+### Key Points:
+1. A `CHECK` constraint can be defined on one or more columns.
+2. It ensures that only valid data, as per the condition, is inserted into the table.
+3. The condition can involve comparison operators, arithmetic operations, logical operators (`AND`, `OR`, `NOT`), and more.
+4. **Important**: The condition must be **deterministic** — meaning that it must always return the same result for the same input. This means functions like `SYSDATE` are not allowed in `CHECK` constraints.
+
+### Correct Use of `CHECK` Constraints with Examples:
+
+#### Example 1: Simple `CHECK` Constraint on a Single Column
+
+Let’s ensure that the `salary` column of an `employees` table is always greater than 1000.
+
+#### SQL Example:
+```sql
+CREATE TABLE employees (
+  employee_id   NUMBER PRIMARY KEY,
+  first_name    VARCHAR2(50),
+  last_name     VARCHAR2(50),
+  salary        NUMBER,
+  CONSTRAINT chk_salary CHECK (salary > 1000)
+);
+```
+
+#### Inserting Valid and Invalid Data:
+```sql
+-- Valid Insert (salary is greater than 1000)
+INSERT INTO employees (employee_id, first_name, last_name, salary)
+VALUES (1, 'John', 'Doe', 1500);
+
+-- Invalid Insert (salary is less than 1000)
+INSERT INTO employees (employee_id, first_name, last_name, salary)
+VALUES (2, 'Jane', 'Doe', 800);
+```
+
+#### Output for Invalid Data:
+```
+ORA-02290: check constraint (SCHEMA_NAME.CHK_SALARY) violated
+```
+
+---
+
+#### Example 2: `CHECK` Constraint with Logical Operators
+
+You can create a `CHECK` constraint with more complex conditions, such as ensuring that a `salary` is between 2000 and 10000.
+
+#### SQL Example:
+```sql
+ALTER TABLE employees
+ADD CONSTRAINT chk_salary_range CHECK (salary >= 2000 AND salary <= 10000);
+```
+
+#### Inserting Valid and Invalid Data:
+```sql
+-- Valid Insert (salary within the range 2000-10000)
+INSERT INTO employees (employee_id, first_name, last_name, salary)
+VALUES (3, 'Alice', 'Smith', 5000);
+
+-- Invalid Insert (salary outside the range)
+INSERT INTO employees (employee_id, first_name, last_name, salary)
+VALUES (4, 'Bob', 'Johnson', 15000);
+```
+
+#### Output for Invalid Data:
+```
+ORA-02290: check constraint (SCHEMA_NAME.CHK_SALARY_RANGE) violated
+```
+
+---
+
+#### Example 3: `CHECK` Constraint with Multiple Columns
+
+Let’s say we want to ensure that the `commission` for an employee must always be less than the `salary`.
+
+#### SQL Example:
+```sql
+ALTER TABLE employees
+ADD CONSTRAINT chk_commission_salary CHECK (commission < salary);
+```
+
+#### Inserting Valid and Invalid Data:
+```sql
+-- Valid Insert (commission is less than salary)
+INSERT INTO employees (employee_id, first_name, last_name, salary, commission)
+VALUES (5, 'Carol', 'Lee', 6000, 500);
+
+-- Invalid Insert (commission is greater than salary)
+INSERT INTO employees (employee_id, first_name, last_name, salary, commission)
+VALUES (6, 'David', 'Kim', 4000, 5000);
+```
+
+#### Output for Invalid Data:
+```
+ORA-02290: check constraint (SCHEMA_NAME.CHK_COMMISSION_SALARY) violated
+```
+
+---
+
+#### Example 4: `CHECK` Constraint with Specific Allowed Values
+
+We can use a `CHECK` constraint to restrict the values that a column can take. For example, ensuring that the `department` can only have specific values like 'HR', 'Finance', or 'IT'.
+
+#### SQL Example:
+```sql
+ALTER TABLE employees
+ADD CONSTRAINT chk_department CHECK (department IN ('HR', 'Finance', 'IT'));
+```
+
+#### Inserting Valid and Invalid Data:
+```sql
+-- Valid Insert (department is one of the allowed values)
+INSERT INTO employees (employee_id, first_name, last_name, salary, department)
+VALUES (7, 'Eve', 'Miller', 3000, 'IT');
+
+-- Invalid Insert (department is not one of the allowed values)
+INSERT INTO employees (employee_id, first_name, last_name, salary, department)
+VALUES (8, 'Frank', 'Brown', 4000, 'Marketing');
+```
+
+#### Output for Invalid Data:
+```
+ORA-02290: check constraint (SCHEMA_NAME.CHK_DEPARTMENT) violated
+```
+
+---
+
+### Correct Approach for Date Constraints
+
+As discussed earlier, **non-deterministic functions** like `SYSDATE` cannot be used in `CHECK` constraints. If you want to enforce a rule like "hire date must be in the past," you can achieve this using **triggers** instead of `CHECK` constraints.
+
+#### Example 5: Enforcing Hire Date with a Trigger
+
+You can create a trigger to ensure that the `hire_date` is never set to a future date.
+
+#### SQL Example:
+```sql
+CREATE OR REPLACE TRIGGER trg_hire_date_check
+BEFORE INSERT OR UPDATE ON employees
+FOR EACH ROW
+BEGIN
+  IF :NEW.hire_date > SYSDATE THEN
+    RAISE_APPLICATION_ERROR(-20001, 'Hire date cannot be in the future.');
+  END IF;
+END;
+/
+```
+
+#### Inserting Valid and Invalid Data:
+```sql
+-- Valid Insert (hire_date is in the past)
+INSERT INTO employees (employee_id, first_name, last_name, salary, hire_date)
+VALUES (9, 'Grace', 'Taylor', 4500, TO_DATE('01-JAN-2020', 'DD-MON-YYYY'));
+
+-- Invalid Insert (hire_date is in the future)
+INSERT INTO employees (employee_id, first_name, last_name, salary, hire_date)
+VALUES (10, 'Hank', 'Wilson', 5500, TO_DATE('01-JAN-2025', 'DD-MON-YYYY'));
+```
+
+#### Output for Invalid Data:
+```
+ORA-20001: Hire date cannot be in the future.
+```
+
+---
+
+### Conclusion:
+1. **CHECK constraints** enforce data integrity rules by limiting the values allowed in columns based on a specified condition.
+2. **Non-deterministic functions** like `SYSDATE` are not allowed in `CHECK` constraints.
+3. For complex validations (like checking dates against the current system date), **triggers** or application-level validations should be used instead.
+4. **Common scenarios** include ensuring value ranges, restricting values to specific domains, and applying conditions across multiple columns.
+
+Let me know if you have further questions or need more examples!
  
  
  
