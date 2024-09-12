@@ -272,5 +272,146 @@ v_day('Day_6'):='Saturdqay';
 v_day('Day_7'):='Sunday';
 END;
 
+In Oracle Database, you can store collections such as nested tables and VARRAYs in table columns, but associative arrays (index-by tables) cannot be stored directly in database columns. Here’s a detailed explanation:
+
+### 1. **Nested Tables**
+
+**Nested tables** can be stored as a column type in a database table. They are suitable for scenarios where you need to model a one-to-many relationship or where each row in a table can have a variable number of child records.
+
+#### Example:
+
+1. **Create an Object Type:**
+
+   Define an object type that represents the records in the nested table.
+
+   ```sql
+   CREATE OR REPLACE TYPE emp_obj AS OBJECT (
+     emp_id   NUMBER,
+     emp_name VARCHAR2(100)
+   );
+   /
+
+   ```
+
+2. **Create a Nested Table Type:**
+
+   Define a nested table of the object type.
+
+   ```sql
+   CREATE OR REPLACE TYPE emp_tab IS TABLE OF emp_obj;
+   /
+   ```
+
+3. **Create a Table with a Nested Table Column:**
+
+   Define a table with a column of the nested table type.
+
+   ```sql
+   CREATE TABLE department_employees (
+     department_id NUMBER,
+     employees     emp_tab
+   ) NESTED TABLE employees STORE AS employees_tab;
+   ```
+
+4. **Insert Data into the Table:**
+
+   Insert rows into the `department_employees` table with nested tables.
+
+   ```sql
+   INSERT INTO department_employees (department_id, employees)
+   VALUES (
+     10,
+     emp_tab(
+       emp_obj(1, 'John Doe'),
+       emp_obj(2, 'Jane Smith')
+     )
+   );
+   ```
+
+5. **Query the Table:**
+
+   Query the table and use the nested table data.
+
+   ```sql
+   SELECT department_id, t.*
+   FROM department_employees d,
+        TABLE(d.employees) t;
+   ```
+
+   **Output:**
+   ```
+   DEPARTMENT_ID    EMP_ID   EMP_NAME
+   -------------   -------  -----------------
+   10              1        John Doe
+   10              2        Jane Smith
+   ```
+
+### 2. **VARRAYs (Variable-Size Arrays)**
+
+**VARRAYs** can also be stored as a column type in a database table. They are suitable for scenarios where the number of elements is limited and relatively small.
+
+#### Example:
+
+1. **Create a VARRAY Type:**
+
+   Define a VARRAY type with a maximum number of elements.
+
+   ```sql
+   CREATE OR REPLACE TYPE phone_numbers AS VARRAY(10) OF VARCHAR2(20);
+   /
+   ```
+
+2. **Create a Table with a VARRAY Column:**
+
+   Define a table with a column of the VARRAY type.
+
+   ```sql
+   CREATE TABLE employees (
+     employee_id NUMBER,
+     name        VARCHAR2(100),
+     phones      phone_numbers
+   );
+   ```
+
+3. **Insert Data into the Table:**
+
+   Insert rows into the `employees` table with VARRAY data.
+
+   ```sql
+   INSERT INTO employees (employee_id, name, phones)
+   VALUES (
+     1,
+     'Alice Johnson',
+     phone_numbers('123-4567', '890-1234')
+   );
+   ```
+
+4. **Query the Table:**
+
+   Query the table and use the VARRAY data.
+
+   ```sql
+   SELECT employee_id, name, phones
+   FROM employees;
+   ```
+
+   **Output:**
+   ```
+   EMPLOYEE_ID    NAME           PHONES
+   ------------  --------------- ------------------------
+   1             Alice Johnson  PHONE_NUMBERS( '123-4567', '890-1234' )
+   ```
+
+### 3. **Associative Arrays**
+
+**Associative arrays** (also known as index-by tables) cannot be stored directly in database columns. They are only used within PL/SQL blocks and cannot be persisted in database tables. They are primarily used for temporary data storage and manipulation during the execution of PL/SQL code.
+
+### Summary
+
+- **Nested Tables**: Can be stored in a database column and are used to represent one-to-many relationships or collections of data.
+- **VARRAYs**: Can be stored in a database column with a predefined maximum size and are used for small, fixed-size collections.
+- **Associative Arrays**: Cannot be stored in database columns; they are used for temporary in-memory storage in PL/SQL.
+
+These types of collections provide flexibility in handling structured data within Oracle databases, allowing you to model complex relationships and data structures effectively. If you need more examples or further details, feel free to ask!
 
 
