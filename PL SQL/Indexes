@@ -179,3 +179,129 @@ Question2. Can more than one index be created in same column?
     But an invisible index can be created on a column which already has an index.
     create index idx1 on T(col1) invisible.
 
+
+An **Index-Organized Table (IOT)** in Oracle Database is a special type of table where data is stored in a **B-tree index structure**, rather than in a traditional heap-organized table. In an IOT, the table data is stored along with the index, and the rows are stored in an indexed order based on the **primary key**. This structure is particularly useful for queries that frequently access rows by the primary key.
+
+### Key Characteristics of Index-Organized Tables (IOTs):
+
+1. **Primary Key-Ordered Storage**: Data is stored in the order of the primary key.
+2. **Efficient Retrieval**: Since data is stored along with the index, retrieval by the primary key is very fast.
+3. **No Separate Index**: There's no need for a separate index on the primary key because the table itself is stored as an index.
+4. **Reduces Redundancy**: It avoids duplicating the primary key values in a separate index and the table.
+5. **Less Suitable for Full Table Scans**: While efficient for primary key access, IOTs are not as efficient for full table scans as heap-organized tables.
+
+### Why Use an IOT?
+
+- IOTs are useful in OLTP (Online Transaction Processing) environments where queries are predominantly based on primary key access.
+- When you have large tables with frequent lookups based on primary keys and the need to minimize storage for indexes.
+
+### Syntax for Creating an IOT:
+
+```sql
+CREATE TABLE iot_employees (
+    employee_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    hire_date DATE,
+    department_id NUMBER,
+    salary NUMBER,
+    CONSTRAINT pk_emp PRIMARY KEY (employee_id)
+) ORGANIZATION INDEX;
+```
+
+In this example, the table `iot_employees` is organized by the **primary key** `employee_id`. The data in the table will be stored in a B-tree index structure, and no separate heap storage is used.
+
+### Example Scenario:
+
+#### Step 1: Creating an Index-Organized Table
+
+```sql
+CREATE TABLE iot_employees (
+    employee_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    hire_date DATE,
+    department_id NUMBER,
+    salary NUMBER,
+    CONSTRAINT pk_emp PRIMARY KEY (employee_id)
+) ORGANIZATION INDEX;
+```
+
+#### Step 2: Inserting Data
+
+```sql
+INSERT INTO iot_employees (employee_id, first_name, last_name, hire_date, department_id, salary)
+VALUES (101, 'John', 'Doe', TO_DATE('2023-01-15', 'YYYY-MM-DD'), 10, 5000);
+
+INSERT INTO iot_employees (employee_id, first_name, last_name, hire_date, department_id, salary)
+VALUES (102, 'Jane', 'Smith', TO_DATE('2022-06-01', 'YYYY-MM-DD'), 20, 5500);
+```
+
+#### Step 3: Querying Data by Primary Key (Efficient Access)
+
+```sql
+SELECT * FROM iot_employees WHERE employee_id = 101;
+```
+
+**Output:**
+
+| EMPLOYEE_ID | FIRST_NAME | LAST_NAME | HIRE_DATE  | DEPARTMENT_ID | SALARY |
+|-------------|------------|-----------|------------|---------------|--------|
+| 101         | John       | Doe       | 2023-01-15 | 10            | 5000   |
+
+Since the `iot_employees` table is an IOT, retrieving data based on the `employee_id` (the primary key) is fast because the data is stored in the index itself.
+
+#### Step 4: Verifying Storage in Data Dictionary
+
+To check if a table is an index-organized table, you can query the **USER_TABLES** view:
+
+```sql
+SELECT table_name, iot_type
+FROM user_tables
+WHERE table_name = 'IOT_EMPLOYEES';
+```
+
+**Output:**
+
+| TABLE_NAME   | IOT_TYPE |
+|--------------|----------|
+| IOT_EMPLOYEES | IOT      |
+
+This confirms that the `IOT_EMPLOYEES` table is index-organized.
+
+### Understanding Data Storage in IOTs
+
+- In a **heap-organized table**, rows are stored in random order, and an index is maintained separately for fast lookups.
+- In an **IOT**, the table data is stored directly within a B-tree structure, eliminating the need for a separate index on the primary key.
+  
+This results in the following:
+- **Faster primary key lookups**: The table data and the index are stored together, reducing the need to access both an index and the table.
+- **Storage savings**: Since the primary key is not stored twice (once in the table and once in the index), you save space.
+
+### Example: Performance with an Index-Organized Table
+
+Imagine a query that frequently retrieves data based on `employee_id` (the primary key):
+
+```sql
+SELECT * FROM iot_employees WHERE employee_id = 102;
+```
+
+Because `employee_id` is the primary key, Oracle does not need to consult an index first and then fetch the data from the table. Instead, it retrieves the data directly from the B-tree index structure, making the query faster than in a traditional heap-organized table.
+
+### Comparison with Heap-Organized Tables:
+
+- **Heap-Organized Table**:
+  - Data is stored in an unordered fashion, and separate indexes are created for faster access.
+  - Suitable for tables that require full table scans.
+  
+- **Index-Organized Table (IOT)**:
+  - Data is stored in the B-tree index structure, ordered by the primary key.
+  - More efficient for queries based on primary key lookups.
+  - Less efficient for full table scans or queries that do not involve the primary key.
+
+### When to Use IOT:
+- Use IOTs when your queries primarily involve retrieving data by the primary key.
+- Avoid IOTs if your queries often involve full table scans or access patterns that don't use the primary key.
+
+By leveraging IOTs, you can significantly improve performance for specific access patterns, especially in high-read environments like transaction processing systems where fast key-based lookups are common.
+
