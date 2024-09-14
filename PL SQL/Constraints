@@ -319,6 +319,92 @@ ORA-20001: Hire date cannot be in the future.
 4. **Common scenarios** include ensuring value ranges, restricting values to specific domains, and applying conditions across multiple columns.
 
 Let me know if you have further questions or need more examples!
+
+The statement **"The number one cause of deadlock is unindexed foreign keys"** refers to a common issue in databases where foreign key constraints are not properly indexed, leading to increased chances of deadlocks during concurrent `INSERT`, `UPDATE`, or `DELETE` operations. Let me explain why this happens and how it relates to deadlocks.
+
+### Key Concepts:
+1. **Foreign Key**: A foreign key in a table references the primary key or unique key in another table. It ensures referential integrity, meaning that every value in the foreign key column(s) must exist in the referenced primary key/unique key column(s).
+   
+2. **Deadlock**: A deadlock occurs when two or more transactions are waiting for each other to release resources (such as row-level locks), causing a cycle of dependency where none of the transactions can proceed.
+
+### Why Unindexed Foreign Keys Can Cause Deadlocks
+
+When you perform **DML operations** (especially `DELETE` or `UPDATE`) on a parent table that has a foreign key relationship to a child table, Oracle needs to ensure that the referential integrity of the data is maintained. To do this, it checks whether the foreign key constraint in the child table is violated.
+
+#### Unindexed Foreign Key Scenario:
+
+If the foreign key columns in the child table are **not indexed**, Oracle will have to **perform a full table scan** on the child table to check for matching rows whenever a `DELETE` or `UPDATE` occurs in the parent table. If there are concurrent DML operations occurring on the child table, this can lead to deadlocks because of the following reasons:
+
+1. **Lock escalation**: Without an index on the foreign key, Oracle may need to lock a large number of rows in the child table during the full table scan. If multiple transactions are trying to modify the child table at the same time, they may acquire locks on different sets of rows in an inconsistent order, leading to a deadlock.
+
+2. **Increased locking duration**: A full table scan takes longer than an index lookup. During this time, rows in both the parent and child tables remain locked, increasing the chances of another transaction coming in and trying to lock the same rows, causing a deadlock.
+
+3. **Locking pattern conflict**: If two transactions try to modify the parent and child tables in a different order, they can each acquire locks that the other transaction needs, leading to a situation where both transactions are waiting for the other to release the lock, resulting in a deadlock.
+
+### Example of Deadlock due to Unindexed Foreign Key
+
+Let's consider a simple parent-child relationship between two tables: `orders` (parent) and `order_items` (child). The `order_items` table has a foreign key (`order_id`) that references the `orders` table.
+
+#### 1. Table structure:
+
+```sql
+-- Parent table (orders)
+CREATE TABLE orders (
+    order_id NUMBER PRIMARY KEY,
+    order_date DATE
+);
+
+-- Child table (order_items) with unindexed foreign key
+CREATE TABLE order_items (
+    item_id NUMBER PRIMARY KEY,
+    order_id NUMBER,
+    product_name VARCHAR2(50),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+```
+
+Notice that there is no index on the `order_id` column in the `order_items` table (the foreign key).
+
+#### 2. DML operations leading to a deadlock:
+
+- **Transaction A**:
+    1. Deletes a row from the `orders` table (parent).
+    2. Oracle tries to check the foreign key constraint, scanning the `order_items` table to ensure no child rows depend on the deleted parent row.
+  
+- **Transaction B**:
+    1. Inserts or updates a row in the `order_items` table (child).
+    2. This transaction tries to lock the child table row that the parent row in Transaction A is dependent on.
+
+If these two transactions occur concurrently, Oracle may lock rows in the parent and child tables in a conflicting order, leading to a deadlock.
+
+#### 3. Deadlock detection:
+Oracle will detect the deadlock and will automatically terminate one of the transactions with an error like:
+
+```sql
+ORA-00060: deadlock detected while waiting for resource
+```
+
+### Solution: Index the Foreign Key
+
+The best way to prevent deadlocks due to unindexed foreign keys is to **create an index on the foreign key column(s)** in the child table. This allows Oracle to efficiently check for foreign key constraints using the index rather than scanning the entire child table.
+
+#### Creating an Index on the Foreign Key:
+```sql
+-- Create an index on the foreign key (order_id) in the child table
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+```
+
+This index allows Oracle to quickly locate the rows in the `order_items` table that reference the `orders` table without locking a large number of rows, significantly reducing the risk of deadlocks.
+
+### Key Benefits of Indexing Foreign Keys:
+1. **Efficient constraint checking**: Oracle can efficiently check for matching rows in the child table without a full table scan.
+2. **Reduced locking duration**: The index lookup is much faster than a full table scan, reducing the time locks are held.
+3. **Minimized risk of deadlocks**: Since Oracle can quickly find the relevant rows in the child table using the index, the chances of deadlocks due to lock escalation or conflicting locking patterns are greatly reduced.
+
+### Summary:
+- **Unindexed foreign keys** can cause deadlocks because Oracle has to perform full table scans on the child table to enforce foreign key constraints, which leads to long-lasting locks and conflicting lock acquisition.
+- By **indexing the foreign key** column(s) in the child table, you ensure faster lookups for foreign key constraint enforcement, reducing the risk of deadlocks.
+
  
  
  
