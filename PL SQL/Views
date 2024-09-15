@@ -64,3 +64,194 @@ END;
 
 Note: Oracle Table Name greater than 30 character length (Up to 128 char) can be used from Oracle 12.2 Onwards 
 
+### What are Materialized Views in Oracle?
+
+A **Materialized View (MV)** is a database object that stores the result of a query physically. It can be refreshed to keep the data up-to-date with its source tables. Materialized views improve query performance, especially in reporting and data warehousing scenarios, as they avoid the need to re-execute the original query.
+
+Materialized views can be refreshed in different ways:
+1. **Complete Refresh**
+2. **Fast Refresh**
+3. **Force Refresh**
+4. **On-Demand or On-Commit Refresh**
+
+### Example: Creating a Materialized View
+
+```sql
+CREATE MATERIALIZED VIEW mv_employees
+BUILD IMMEDIATE
+REFRESH COMPLETE
+ON DEMAND
+AS
+SELECT employee_id, first_name, last_name, department_id, hire_date
+FROM employees;
+```
+
+- **BUILD IMMEDIATE**: The MV is built immediately when the command is executed.
+- **REFRESH COMPLETE**: The entire view is refreshed (details below).
+- **ON DEMAND**: The view is refreshed only when requested.
+
+### 1. **Complete Refresh**
+
+A complete refresh **rebuilds the entire materialized view** from scratch by executing the query. It can be resource-intensive but guarantees up-to-date data.
+
+#### Example of Complete Refresh:
+
+```sql
+EXEC DBMS_MVIEW.REFRESH('MV_EMPLOYEES', 'C');
+```
+
+- `'C'` indicates a **complete** refresh.
+- The MV will be rebuilt based on the `employees` table data.
+
+**Output**:
+- Materialized view is completely refreshed, reflecting any changes in the `employees` table.
+
+---
+
+### 2. **Fast Refresh**
+
+Fast refresh uses **incremental changes** (captured in materialized view logs) to refresh the MV. It’s more efficient than a complete refresh but requires a materialized view log on the source tables.
+
+#### Creating a Materialized View Log
+
+Before using fast refresh, create a materialized view log:
+
+```sql
+CREATE MATERIALIZED VIEW LOG ON employees
+WITH ROWID (first_name, last_name, department_id, hire_date)
+INCLUDING NEW VALUES;
+```
+
+#### Example of Fast Refresh:
+
+```sql
+CREATE MATERIALIZED VIEW mv_employees_fast
+BUILD IMMEDIATE
+REFRESH FAST
+ON DEMAND
+AS
+SELECT employee_id, first_name, last_name, department_id, hire_date
+FROM employees;
+```
+
+- **REFRESH FAST**: Instructs Oracle to perform fast refresh using the materialized view log.
+
+**Refresh the View**:
+
+```sql
+EXEC DBMS_MVIEW.REFRESH('MV_EMPLOYEES_FAST', 'F');
+```
+
+- `'F'` indicates a **fast refresh**.
+
+**Output**:
+- Only changes (insertions, updates, deletions) since the last refresh are applied, improving performance.
+
+---
+
+### 3. **Force Refresh**
+
+Force refresh tries to perform a **fast refresh** if possible, and if not, it performs a **complete refresh**.
+
+#### Example of Force Refresh:
+
+```sql
+EXEC DBMS_MVIEW.REFRESH('MV_EMPLOYEES', 'FORCE');
+```
+
+- Oracle will try a fast refresh, and if it fails (e.g., no materialized view log exists), it defaults to a complete refresh.
+
+**Output**:
+- The materialized view is refreshed, choosing the most efficient option.
+
+---
+
+### 4. **Refresh Modes: On Demand vs. On Commit**
+
+- **ON DEMAND**: The materialized view is refreshed when explicitly requested by the user.
+- **ON COMMIT**: The materialized view is refreshed automatically when a transaction on the base tables is committed.
+
+#### Example: On-Commit Refresh
+
+```sql
+CREATE MATERIALIZED VIEW mv_employees_commit
+BUILD IMMEDIATE
+REFRESH FAST
+ON COMMIT
+AS
+SELECT employee_id, first_name, last_name, department_id, hire_date
+FROM employees;
+```
+
+- **ON COMMIT**: Automatically refreshes the materialized view every time a `COMMIT` is issued on the base table.
+
+**Scenario**:
+1. Insert new data into the `employees` table:
+
+   ```sql
+   INSERT INTO employees (employee_id, first_name, last_name, department_id, hire_date)
+   VALUES (205, 'Anna', 'Jones', 30, SYSDATE);
+   
+   COMMIT;
+   ```
+
+2. The materialized view `mv_employees_commit` is **automatically refreshed** after the `COMMIT` command is executed.
+
+**Output**:
+- The new data (`Anna Jones`) is immediately visible in the materialized view after the `COMMIT`.
+
+---
+
+### Automatic and Manual Refresh Intervals
+
+You can schedule automatic refreshes for materialized views using the `START WITH` and `NEXT` clauses.
+
+#### Example: Automatic Daily Refresh
+
+```sql
+CREATE MATERIALIZED VIEW mv_employees_auto
+BUILD IMMEDIATE
+REFRESH COMPLETE
+START WITH SYSDATE
+NEXT SYSDATE + 1
+AS
+SELECT employee_id, first_name, last_name, department_id, hire_date
+FROM employees;
+```
+
+- **START WITH SYSDATE**: Refresh starts immediately.
+- **NEXT SYSDATE + 1**: The refresh occurs daily.
+
+**Output**:
+- The materialized view is automatically refreshed every day.
+
+---
+
+### Viewing the Materialized View Refresh
+
+You can check the last refresh time of a materialized view from the `USER_MVIEWS` view.
+
+```sql
+SELECT mview_name, last_refresh_date
+FROM user_mviews
+WHERE mview_name = 'MV_EMPLOYEES';
+```
+
+**Output**:
+```
+MVIEW_NAME         LAST_REFRESH_DATE
+----------------   ---------------------
+MV_EMPLOYEES       13-SEP-2024 10:35:21
+```
+
+---
+
+### Summary of Refresh Options:
+- **Complete Refresh**: Rebuilds the entire materialized view.
+- **Fast Refresh**: Updates only the changed rows using the materialized view log.
+- **Force Refresh**: Chooses fast refresh if possible, otherwise falls back to complete refresh.
+- **On Demand**: Refreshes the materialized view only when explicitly requested.
+- **On Commit**: Automatically refreshes the materialized view when changes in the base table are committed.
+
+I hope this clears up the concept of materialized views and their refresh mechanisms! Let me know if you'd like more examples or details.
+
