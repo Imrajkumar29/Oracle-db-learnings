@@ -1,0 +1,10 @@
+1. Decode can perform only equality check. Case can perform equals , not equal , > , < check , can have AND, or
+and efficient work like a if then else block. i.e case can work with logical operator.
+2. Decode does not expect datatype consistence whereas case expects datatype consistency. 
+3. Decode is a function and case is a statement. decode can be only used with sql queries and 
+it cannot used with pl constructs directly used to work with variables.
+4. case when salary in/bewteen (subquery can be used here). this cannot be done with decode.
+5. case can used when passing as a parameter between functions and procedures.
+6. case and decode handle null differently . decode is one place in oracle where NULL=NULL works.
+
+https://tipsfororacle.blogspot.com/2016/09/decode-vs-case.html
