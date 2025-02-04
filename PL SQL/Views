@@ -49,6 +49,13 @@ The view will be in valid status.
 If we query the view , it will throw error as it will not be able to find the column in the underlying table.
 3. How to check the list of objects used in a view? check user_dependencies table -> to find list of dependent objects.
 
+In case of materialized view when new column is added to an underlying table. when we query the mv we will be able to see the data.
+but when we try to refresh the materialized view it will throw error. for this purpose we need to drop and recreate the materialized 
+view.
+
+select staleness, compile_state,m.* from user_mviews m;
+staleness - fresh -implies the mview is up to date, stale - implies refresh has to be performed to make it in sync with underlying table.
+
 Write a procedure to create a view for all the tables in the given schema . The view name should be same as table name suffixed with "_V".
 
 Declare 
