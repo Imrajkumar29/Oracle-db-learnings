@@ -14,6 +14,10 @@ summary :
 The new string data types will be known as Extended String Types in Oracle 12c. 
 The feature is controlled by an initialization parameter MAX_STRING_SIZE.
 
+Oracle 23c LTS name changed to oracle 23 ai.
+Oracle 23ai introduces a number of key technologies to reduce the complexity for developers. 
+Perhaps the most innovative and important of them is the introduction of JSON Relational Duality.
+
 Oracle 12 C
 Increased Column Size Limits
 ______________________________
