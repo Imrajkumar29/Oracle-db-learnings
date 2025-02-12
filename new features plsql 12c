@@ -1,0 +1,163 @@
+reference :https://www.databasestar.com/oracle-12c-new-features-for-developers/
+Oracle 12 C
+Increased Column Size Limits
+______________________________
+In Oracle 12c, you can take advantage of an increased column size for some data types.
+
+The VARCHAR2, NVARCHAR2 and RAW data types allow for a larger number of characters than previous versions.
+
+Data Type	Oracle 11g Limit	Oracle 11g PL/SQL Limit	Limit in Oracle 12c
+VARCHAR2	2K	4K	32K
+NVARCHAR2	2K	4K	32K
+RAW	2K	4K	32K
+How can you use these new maximum sizes?
+
+You need to change a setting within the init.ora file. The init.ora file is Oracle’s initialization file, which is read every time the database starts up.
+
+The setting is called MAX_STRING_SIZE. There are two values for this:
+
+STANDARD – The original sizes.
+EXTENDED – The new larger sizes.
+There are a few things to remember with the new sizes though:
+
+With this setting is that you can’t reverse it. Once you’ve set it, there’s no going back.
+The maximum size for a column with an index is 6400 bytes. Make sure you’re not using any indexes on any column larger than this.
+The database must be in upgrade mode.
+It is stored as a CLOB behind the scenes.
+
+__________________________________________________________________________________
+TOP N QUERY
+
+Well, all of that is easier in Oracle 12c.
+
+They have introduced the Top-N query syntax. This lets you specify a certain number of rows to be returned from your query.
+
+This is done using the FETCH FIRST|NEXT|PERCENT clause.
+
+For example, to fetch the first 10 rows from the student table, we can use a query like this:
+
+SELECT first_name, last_name, date_of_birth
+FROM student
+ORDER BY date_of_birth
+FETCH FIRST 10 ROWS ONLY;
+
+If you use the WITH TIES keyword, you can include records that match row N. For example, if row 11 has the same date_of_birth as row 10, then they will both be included in your result set.
+
+SELECT first_name, last_name, date_of_birth
+FROM student
+ORDER BY date_of_birth
+FETCH FIRST 10 ROWS ONLY WITH TIES;
+
+Another thing you can do with the Oracle Top-N clause is to display the top N percentage of a result set. For example, you can show the top 5% of students based on the date_of_birth.
+
+SELECT first_name, last_name, date_of_birth
+FROM student
+ORDER BY date_of_birth
+FETCH FIRST 10 PERCENT ROWS ONLY;
+
+Also with the Top N clause, you can display the rows from 11 to 20. As in, you can ignore the first 10 rows and display the next 10.
+
+This is how to do pagination in Oracle. It’s much easier than the old methods of using ROWNUM inside subqueries.
+
+SELECT first_name, last_name, date_of_birth
+FROM student
+ORDER BY date_of_birth
+OFFSET 5 ROWS FETCH NEXT 5 ROWS ONLY;
+
+This new query syntax can also be used within PL/SQL code. It’s not limited to just standard SQL queries.
+
+There are a few drawbacks of this new Top-N syntax though:
+
+You can’t use it within SELECT statements that use the FOR UPDATE keyword.
+If you use it within a materialised view, then that view can’t perform an incremental refresh.
+____________________________________________________________________________________________
+
+JSON Support in the Database
+
+You could then run a query like this:
+
+SELECT
+b.document.businessName,
+b.document.address.streetNumber,
+b.document.address.streetName
+FROM businesses b;
+This makes it much easier to access data that’s in the JSON format in your database.
+
+__________________________________________________________________________________
+IDENTITY Columns
+In other databases, such as MySQL, you can set a column to use automatically generated values. This is often used for primary keys, so that when you insert a record, the primary key is generated automatically.
+
+This is implemented as AUTO_INCREMENT in MySQL.
+
+Before Oracle 12c, to do this, you needed to use a sequence and a BEFORE INSERT trigger, as I’ve outlined my article on how to create an auto increment column.
+
+Now, in Oracle 12c, it’s much easier to do this.
+
+You can use the IDENTITY feature to set a column as an identity, which works in much the same way as an auto increment column.
+
+Here’s an example:
+
+CREATE TABLE idtest (
+new_id NUMBER GENERATED AS IDENTITY,
+first_name VARCHAR2(100)
+last_name VARCHAR2(100)
+);
+___________________________________________________________________________________________
+
+Default Values
+There are a few changes to the way Oracle 12c allows default values.
+
+In Oracle 12c, you can:
+
+Use sequences as the default value for a column
+Use default values only when the specified value is NULL
+Before Oracle 12c, this had to be done using INSERT triggers.
+
+This is a great way to simplify your programs and data entry.
+
+Let’s take a look at an example, where we have a normal column, a column that defaults to a sequence, and a column that uses defaults only when NULL.
+
+CREATE SEQUENCE seq_test;
+
+CREATE TABLE default_test (
+seq_val NUMBER DEFAULT seq_test.NEXTVAL PRIMARY KEY,
+null_val NUMBER DEFAULT ON NULL 99
+normal_val NUMBER
+);
+Now, let’s insert some data into our table.
+
+INSERT INTO default_test (null_val, normal_val) VALUES (1, 2);
+INSERT INTO default_test (null_val, normal_val) VALUES (NULL, 3);
+INSERT INTO default_test (null_val, normal_val) VALUES (NULL, 4);
+INSERT INTO default_test (seq_val, null_val, normal_val) VALUES (10, 11, 12);
+INSERT INTO default_test (normal_val) VALUES (13);
+The output would look like this:
+
+SEQ_VAL	NULL_VAL	NORMAL_VAL
+
+
+WITH clause can contain PLSQL functions
+In Oracle 12c, you can define PL/SQL functions and procedures inside a WITH clause.
+
+This will likely make your code run faster than if it was a separately compiled function.
+
+Let’s take a look at an example.
+
+WITH
+FUNCTION findLatestHireDate IS
+BEGIN
+  SELECT MAX(hire_date)
+  FROM employee;
+END
+SELECT department_name, findLatestHireDate
+FROM department;
+Result:
+
+MAX(HIREDATE)
+03/Oct/16
+This means that your function is compiled when you run your query, rather than creating an object and storing it in the database.
+1	1	2
+2	99	3
+3	99	4
+10	11	12
+4	99	13
